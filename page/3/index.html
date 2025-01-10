@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>
+Land and Hold Short | Flying a small plane. | Page 3</title>
+<link rel="profile" href="https://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="https://s2.wp.com/wp-content/themes/pub/twentyten/style.css?ver=20190507" />
+<link rel="pingback" href="https://lahso.megginson.com/xmlrpc.php">
+<meta name='robots' content='max-image-preview:large' />
+
+<!-- Async WordPress.com Remote Login -->
+<script id="wpcom_remote_login_js">
+var wpcom_remote_login_extra_auth = '';
+function wpcom_remote_login_remove_dom_node_id( element_id ) {
+	var dom_node = document.getElementById( element_id );
+	if ( dom_node ) { dom_node.parentNode.removeChild( dom_node ); }
+}
+function wpcom_remote_login_remove_dom_node_classes( class_name ) {
+	var dom_nodes = document.querySelectorAll( '.' + class_name );
+	for ( var i = 0; i < dom_nodes.length; i++ ) {
+		dom_nodes[ i ].parentNode.removeChild( dom_nodes[ i ] );
+	}
+}
+function wpcom_remote_login_final_cleanup() {
+	wpcom_remote_login_remove_dom_node_classes( "wpcom_remote_login_msg" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_validate" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_js" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_iframe" );
+	wpcom_remote_login_remove_dom_node_id( "wpcom_request_access_styles" );
+}
+
+// Watch for messages back from the remote login
+window.addEventListener( "message", function( e ) {
+	if ( e.origin === "https://r-login.wordpress.com" ) {
+		var data = {};
+		try {
+			data = JSON.parse( e.data );
+		} catch( e ) {
+			wpcom_remote_login_final_cleanup();
+			return;
+		}
+
+		if ( data.msg === 'LOGIN' ) {
+			// Clean up the login check iframe
+			wpcom_remote_login_remove_dom_node_id( "wpcom_remote_login_key" );
+
+			var id_regex = new RegExp( /^[0-9]+$/ );
+			var token_regex = new RegExp( /^.*|.*|.*$/ );
+			if (
+				token_regex.test( data.token )
+				&& id_regex.test( data.wpcomid )
+			) {
+				// We have everything we need to ask for a login
+				var script = document.createElement( "script" );
+				script.setAttribute( "id", "wpcom_remote_login_validate" );
+				script.src = '/remote-login.php?wpcom_remote_login=validate'
+					+ '&wpcomid=' + data.wpcomid
+					+ '&token=' + encodeURIComponent( data.token )
+					+ '&host=' + window.location.protocol
+					+ '//' + window.location.hostname
+					+ '&postid=401'
+					+ '&is_singular=';
+				document.body.appendChild( script );
+			}
+
+			return;
+		}
+
+		// Safari ITP, not logged in, so redirect
+		if ( data.msg === 'LOGIN-REDIRECT' ) {
+			window.location = 'https://wordpress.com/log-in?redirect_to=' + window.location.href;
+			return;
+		}
+
+		// Safari ITP, storage access failed, remove the request
+		if ( data.msg === 'LOGIN-REMOVE' ) {
+			var css_zap = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } @media screen and ( max-width: 782px ) { html { margin-top: 0 !important; } * html body { margin-top: 0 !important; } }';
+			var style_zap = document.createElement( 'style' );
+			style_zap.type = 'text/css';
+			style_zap.appendChild( document.createTextNode( css_zap ) );
+			document.body.appendChild( style_zap );
+
+			var e = document.getElementById( 'wpcom_request_access_iframe' );
+			e.parentNode.removeChild( e );
+
+			document.cookie = 'wordpress_com_login_access=denied; path=/; max-age=31536000';
+
+			return;
+		}
+
+		// Safari ITP
+		if ( data.msg === 'REQUEST_ACCESS' ) {
+			console.log( 'request access: safari' );
+
+			// Check ITP iframe enable/disable knob
+			if ( wpcom_remote_login_extra_auth !== 'safari_itp_iframe' ) {
+				return;
+			}
+
+			// If we are in a "private window" there is no ITP.
+			var private_window = false;
+			try {
+				var opendb = window.openDatabase( null, null, null, null );
+			} catch( e ) {
+				private_window = true;
+			}
+
+			if ( private_window ) {
+				console.log( 'private window' );
+				return;
+			}
+
+			var iframe = document.createElement( 'iframe' );
+			iframe.id = 'wpcom_request_access_iframe';
+			iframe.setAttribute( 'scrolling', 'no' );
+			iframe.setAttribute( 'sandbox', 'allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-top-navigation-by-user-activation' );
+			iframe.src = 'https://r-login.wordpress.com/remote-login.php?wpcom_remote_login=request_access&origin=' + encodeURIComponent( data.origin ) + '&wpcomid=' + encodeURIComponent( data.wpcomid );
+
+			var css = 'html { -webkit-transition: margin-top 1s; transition: margin-top 1s; } /* 9001 */ html { margin-top: 46px !important; } * html body { margin-top: 46px !important; } @media screen and ( max-width: 660px ) { html { margin-top: 71px !important; } * html body { margin-top: 71px !important; } #wpcom_request_access_iframe { display: block; height: 71px !important; } } #wpcom_request_access_iframe { border: 0px; height: 46px; position: fixed; top: 0; left: 0; width: 100%; min-width: 100%; z-index: 99999; background: #23282d; } ';
+
+			var style = document.createElement( 'style' );
+			style.type = 'text/css';
+			style.id = 'wpcom_request_access_styles';
+			style.appendChild( document.createTextNode( css ) );
+			document.body.appendChild( style );
+
+			document.body.appendChild( iframe );
+		}
+
+		if ( data.msg === 'DONE' ) {
+			wpcom_remote_login_final_cleanup();
+		}
+	}
+}, false );
+
+// Inject the remote login iframe after the page has had a chance to load
+// more critical resources
+window.addEventListener( "DOMContentLoaded", function( e ) {
+	var iframe = document.createElement( "iframe" );
+	iframe.style.display = "none";
+	iframe.setAttribute( "scrolling", "no" );
+	iframe.setAttribute( "id", "wpcom_remote_login_key" );
+	iframe.src = "https://r-login.wordpress.com/remote-login.php"
+		+ "?wpcom_remote_login=key"
+		+ "&origin=aHR0cHM6Ly9sYWhzby5tZWdnaW5zb24uY29t"
+		+ "&wpcomid=14987813"
+		+ "&time=1736523317";
+	document.body.appendChild( iframe );
+}, false );
+</script>
+<link rel='dns-prefetch' href='https://s1.wp.com/' />
+<link rel='dns-prefetch' href='https://s0.wp.com/' />
+<link rel='dns-prefetch' href='https://s2.wp.com/' />
+<link rel='dns-prefetch' href='https://af.pubmine.com/' />
+<link rel='dns-prefetch' href='https://s.pubmine.com/' />
+<link rel='dns-prefetch' href='https://x.bidswitch.net/' />
+<link rel='dns-prefetch' href='https://static.criteo.net/' />
+<link rel='dns-prefetch' href='https://ib.adnxs.com/' />
+<link rel='dns-prefetch' href='https://aax.amazon-adsystem.com/' />
+<link rel='dns-prefetch' href='https://bidder.criteo.com/' />
+<link rel='dns-prefetch' href='https://cas.criteo.com/' />
+<link rel='dns-prefetch' href='https://gum.criteo.com/' />
+<link rel='dns-prefetch' href='https://ads.pubmatic.com/' />
+<link rel='dns-prefetch' href='https://gads.pubmatic.com/' />
+<link rel='dns-prefetch' href='https://tpc.googlesyndication.com/' />
+<link rel='dns-prefetch' href='https://ad.doubleclick.net/' />
+<link rel='dns-prefetch' href='https://googleads.g.doubleclick.net/' />
+<link rel='dns-prefetch' href='https://www.googletagservices.com/' />
+<link rel='dns-prefetch' href='https://cdn.switchadhub.com/' />
+<link rel='dns-prefetch' href='https://delivery.g.switchadhub.com/' />
+<link rel='dns-prefetch' href='https://delivery.swid.switchadhub.com/' />
+<link rel='dns-prefetch' href='https://a.teads.tv/' />
+<link rel='dns-prefetch' href='https://prebid.media.net/' />
+<link rel='dns-prefetch' href='https://adserver-us.adtech.advertising.com/' />
+<link rel='dns-prefetch' href='https://fastlane.rubiconproject.com/' />
+<link rel='dns-prefetch' href='https://prebid-server.rubiconproject.com/' />
+<link rel='dns-prefetch' href='https://hb-api.omnitagjs.com/' />
+<link rel='dns-prefetch' href='https://mtrx.go.sonobi.com/' />
+<link rel='dns-prefetch' href='https://apex.go.sonobi.com/' />
+<link rel='dns-prefetch' href='https://u.openx.net/' />
+<link rel="alternate" type="application/rss+xml" title="Land and Hold Short &raquo; Feed" href="../../feed/index.html" />
+<link rel="alternate" type="application/rss+xml" title="Land and Hold Short &raquo; Comments Feed" href="../../comments/feed/index.html" />
+	<script type="text/javascript">
+		/* <![CDATA[ */
+		function addLoadEvent(func) {
+			var oldonload = window.onload;
+			if (typeof window.onload != 'function') {
+				window.onload = func;
+			} else {
+				window.onload = function () {
+					oldonload();
+					func();
+				}
+			}
+		}
+		/* ]]> */
+	</script>
+	<script type="text/javascript">
+/* <![CDATA[ */
+window._wpemojiSettings = {"baseUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/72x72\/","ext":".png","svgUrl":"https:\/\/s0.wp.com\/wp-content\/mu-plugins\/wpcom-smileys\/twemoji\/2\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/s2.wp.com\/wp-includes\/js\/wp-emoji-release.min.js?m=1719498190i&ver=6.8-alpha-59438"}};
+/*! This file is auto-generated */
+!function(i,n){var o,s,e;function c(e){try{var t={supportTests:e,timestamp:(new Date).valueOf()};sessionStorage.setItem(o,JSON.stringify(t))}catch(e){}}function p(e,t,n){e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(t,0,0);var t=new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data),r=(e.clearRect(0,0,e.canvas.width,e.canvas.height),e.fillText(n,0,0),new Uint32Array(e.getImageData(0,0,e.canvas.width,e.canvas.height).data));return t.every(function(e,t){return e===r[t]})}function u(e,t,n){switch(t){case"flag":return n(e,"\ud83c\udff3\ufe0f\u200d\u26a7\ufe0f","\ud83c\udff3\ufe0f\u200b\u26a7\ufe0f")?!1:!n(e,"\ud83c\uddfa\ud83c\uddf3","\ud83c\uddfa\u200b\ud83c\uddf3")&&!n(e,"\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f","\ud83c\udff4\u200b\udb40\udc67\u200b\udb40\udc62\u200b\udb40\udc65\u200b\udb40\udc6e\u200b\udb40\udc67\u200b\udb40\udc7f");case"emoji":return!n(e,"\ud83d\udc26\u200d\u2b1b","\ud83d\udc26\u200b\u2b1b")}return!1}function f(e,t,n){var r="undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?new OffscreenCanvas(300,150):i.createElement("canvas"),a=r.getContext("2d",{willReadFrequently:!0}),o=(a.textBaseline="top",a.font="600 32px Arial",{});return e.forEach(function(e){o[e]=t(a,e,n)}),o}function t(e){var t=i.createElement("script");t.src=e,t.defer=!0,i.head.appendChild(t)}"undefined"!=typeof Promise&&(o="wpEmojiSettingsSupports",s=["flag","emoji"],n.supports={everything:!0,everythingExceptFlag:!0},e=new Promise(function(e){i.addEventListener("DOMContentLoaded",e,{once:!0})}),new Promise(function(t){var n=function(){try{var e=JSON.parse(sessionStorage.getItem(o));if("object"==typeof e&&"number"==typeof e.timestamp&&(new Date).valueOf()<e.timestamp+604800&&"object"==typeof e.supportTests)return e.supportTests}catch(e){}return null}();if(!n){if("undefined"!=typeof Worker&&"undefined"!=typeof OffscreenCanvas&&"undefined"!=typeof URL&&URL.createObjectURL&&"undefined"!=typeof Blob)try{var e="postMessage("+f.toString()+"("+[JSON.stringify(s),u.toString(),p.toString()].join(",")+"));",r=new Blob([e],{type:"text/javascript"}),a=new Worker(URL.createObjectURL(r),{name:"wpTestEmojiSupports"});return void(a.onmessage=function(e){c(n=e.data),a.terminate(),t(n)})}catch(e){}c(n=f(s,u,p))}t(n)}).then(function(e){for(var t in e)n.supports[t]=e[t],n.supports.everything=n.supports.everything&&n.supports[t],"flag"!==t&&(n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&n.supports[t]);n.supports.everythingExceptFlag=n.supports.everythingExceptFlag&&!n.supports.flag,n.DOMReady=!1,n.readyCallback=function(){n.DOMReady=!0}}).then(function(){return e}).then(function(){var e;n.supports.everything||(n.readyCallback(),(e=n.source||{}).concatemoji?t(e.concatemoji):e.wpemoji&&e.twemoji&&(t(e.twemoji),t(e.wpemoji)))}))}((window,document),window._wpemojiSettings);
+/* ]]> */
+</script>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-1' href='https://s0.wp.com/_static/??-eJyFjMEKwjAQRH/IuFSp6EH8ljRZQ9pNNnS3hv69KSgeBL0MDO/NQC3GcVbMCgNxMIWWELNA5dlbLxCIB0t7J7KDf67WhtbGzePwtUjLx48+oArg0ihPEQ3ZCoqpkFUUEF0Jfx2MqMW66dUhMW/hF2rjmO8xR0Ujbmaid1+3v1u6dqdz3x2786Ufn1gWXnc=&cssminify=yes' type='text/css' media='all' />
+<style id='wp-emoji-styles-inline-css'>
+
+	img.wp-smiley, img.emoji {
+		display: inline !important;
+		border: none !important;
+		box-shadow: none !important;
+		height: 1em !important;
+		width: 1em !important;
+		margin: 0 0.07em !important;
+		vertical-align: -0.1em !important;
+		background: none !important;
+		padding: 0 !important;
+	}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-2-1' href='https://s2.wp.com/_static/??-eJyljkEOwiAQRS8kTNEaw8J4FqATpFIgw1DD7a1uTFw1cfnz8l4+PItwOTEmhhKbD6mCb9u0SH4jhLAqLbUcwLYQJ7Axu4eIwZKhDpV7ROlqPcB/Ib7jsif0sSrMyMW8ddNzY+EpTLu//CTIcEi+fvXbclWX03jW41EN8wuLhGpj&cssminify=yes' type='text/css' media='all' />
+<style id='wp-block-library-inline-css'>
+.has-text-align-justify {
+	text-align:justify;
+}
+.has-text-align-justify{text-align:justify;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-4-1' href='https://s2.wp.com/_static/??-eJzTLy/QzcxLzilNSS3WzyrWz01NyUxMzUnNTc0rQeEU5CRWphbp5qSmJyZX6uVm5uklFxfr6OPTDpRD5sM02efaGpoZmFkYGRuZGmQBAHPvL0Y=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-sharing-buttons-style-inline-css'>
+.jetpack-sharing-buttons__services-list{display:flex;flex-direction:row;flex-wrap:wrap;gap:0;list-style-type:none;margin:5px;padding:0}.jetpack-sharing-buttons__services-list.has-small-icon-size{font-size:12px}.jetpack-sharing-buttons__services-list.has-normal-icon-size{font-size:16px}.jetpack-sharing-buttons__services-list.has-large-icon-size{font-size:24px}.jetpack-sharing-buttons__services-list.has-huge-icon-size{font-size:36px}@media print{.jetpack-sharing-buttons__services-list{display:none!important}}.editor-styles-wrapper .wp-block-jetpack-sharing-buttons{gap:0;padding-inline-start:0}ul.jetpack-sharing-buttons__services-list.has-background{padding:1.25em 2.375em}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-6-1' href='https://s2.wp.com/wp-content/plugins/coblocks/2.18.1-simple-rev.4/dist/coblocks-style.css?m=1681832297i&cssminify=yes' type='text/css' media='all' />
+<style id='classic-theme-styles-inline-css'>
+/*! This file is auto-generated */
+.wp-block-button__link{color:#fff;background-color:#32373c;border-radius:9999px;box-shadow:none;text-decoration:none;padding:calc(.667em + 2px) calc(1.333em + 2px);font-size:1.125em}.wp-block-file__button{background:#32373c;color:#fff;text-decoration:none}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-8-1' href='https://s1.wp.com/_static/??/wp-content/mu-plugins/core-compat/wp-mediaelement.css,/wp-content/mu-plugins/wpcom-bbpress-premium-themes.css?m=1432920480j&cssminify=yes' type='text/css' media='all' />
+<style id='global-styles-inline-css'>
+:root{--wp--preset--aspect-ratio--square: 1;--wp--preset--aspect-ratio--4-3: 4/3;--wp--preset--aspect-ratio--3-4: 3/4;--wp--preset--aspect-ratio--3-2: 3/2;--wp--preset--aspect-ratio--2-3: 2/3;--wp--preset--aspect-ratio--16-9: 16/9;--wp--preset--aspect-ratio--9-16: 9/16;--wp--preset--color--black: #000;--wp--preset--color--cyan-bluish-gray: #abb8c3;--wp--preset--color--white: #fff;--wp--preset--color--pale-pink: #f78da7;--wp--preset--color--vivid-red: #cf2e2e;--wp--preset--color--luminous-vivid-orange: #ff6900;--wp--preset--color--luminous-vivid-amber: #fcb900;--wp--preset--color--light-green-cyan: #7bdcb5;--wp--preset--color--vivid-green-cyan: #00d084;--wp--preset--color--pale-cyan-blue: #8ed1fc;--wp--preset--color--vivid-cyan-blue: #0693e3;--wp--preset--color--vivid-purple: #9b51e0;--wp--preset--color--blue: #0066cc;--wp--preset--color--medium-gray: #666;--wp--preset--color--light-gray: #f1f1f1;--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%);--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%);--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%);--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%);--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%);--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%);--wp--preset--gradient--blush-light-purple: linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%);--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%);--wp--preset--gradient--luminous-dusk: linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%);--wp--preset--gradient--pale-ocean: linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%);--wp--preset--gradient--electric-grass: linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%);--wp--preset--gradient--midnight: linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%);--wp--preset--font-size--small: 13px;--wp--preset--font-size--medium: 20px;--wp--preset--font-size--large: 36px;--wp--preset--font-size--x-large: 42px;--wp--preset--font-family--albert-sans: 'Albert Sans', sans-serif;--wp--preset--font-family--alegreya: Alegreya, serif;--wp--preset--font-family--arvo: Arvo, serif;--wp--preset--font-family--bodoni-moda: 'Bodoni Moda', serif;--wp--preset--font-family--bricolage-grotesque: 'Bricolage Grotesque', sans-serif;--wp--preset--font-family--cabin: Cabin, sans-serif;--wp--preset--font-family--chivo: Chivo, sans-serif;--wp--preset--font-family--commissioner: Commissioner, sans-serif;--wp--preset--font-family--cormorant: Cormorant, serif;--wp--preset--font-family--courier-prime: 'Courier Prime', monospace;--wp--preset--font-family--crimson-pro: 'Crimson Pro', serif;--wp--preset--font-family--dm-mono: 'DM Mono', monospace;--wp--preset--font-family--dm-sans: 'DM Sans', sans-serif;--wp--preset--font-family--dm-serif-display: 'DM Serif Display', serif;--wp--preset--font-family--domine: Domine, serif;--wp--preset--font-family--eb-garamond: 'EB Garamond', serif;--wp--preset--font-family--epilogue: Epilogue, sans-serif;--wp--preset--font-family--fahkwang: Fahkwang, sans-serif;--wp--preset--font-family--figtree: Figtree, sans-serif;--wp--preset--font-family--fira-sans: 'Fira Sans', sans-serif;--wp--preset--font-family--fjalla-one: 'Fjalla One', sans-serif;--wp--preset--font-family--fraunces: Fraunces, serif;--wp--preset--font-family--gabarito: Gabarito, system-ui;--wp--preset--font-family--ibm-plex-mono: 'IBM Plex Mono', monospace;--wp--preset--font-family--ibm-plex-sans: 'IBM Plex Sans', sans-serif;--wp--preset--font-family--ibarra-real-nova: 'Ibarra Real Nova', serif;--wp--preset--font-family--instrument-serif: 'Instrument Serif', serif;--wp--preset--font-family--inter: Inter, sans-serif;--wp--preset--font-family--josefin-sans: 'Josefin Sans', sans-serif;--wp--preset--font-family--jost: Jost, sans-serif;--wp--preset--font-family--libre-baskerville: 'Libre Baskerville', serif;--wp--preset--font-family--libre-franklin: 'Libre Franklin', sans-serif;--wp--preset--font-family--literata: Literata, serif;--wp--preset--font-family--lora: Lora, serif;--wp--preset--font-family--merriweather: Merriweather, serif;--wp--preset--font-family--montserrat: Montserrat, sans-serif;--wp--preset--font-family--newsreader: Newsreader, serif;--wp--preset--font-family--noto-sans-mono: 'Noto Sans Mono', sans-serif;--wp--preset--font-family--nunito: Nunito, sans-serif;--wp--preset--font-family--open-sans: 'Open Sans', sans-serif;--wp--preset--font-family--overpass: Overpass, sans-serif;--wp--preset--font-family--pt-serif: 'PT Serif', serif;--wp--preset--font-family--petrona: Petrona, serif;--wp--preset--font-family--piazzolla: Piazzolla, serif;--wp--preset--font-family--playfair-display: 'Playfair Display', serif;--wp--preset--font-family--plus-jakarta-sans: 'Plus Jakarta Sans', sans-serif;--wp--preset--font-family--poppins: Poppins, sans-serif;--wp--preset--font-family--raleway: Raleway, sans-serif;--wp--preset--font-family--roboto: Roboto, sans-serif;--wp--preset--font-family--roboto-slab: 'Roboto Slab', serif;--wp--preset--font-family--rubik: Rubik, sans-serif;--wp--preset--font-family--rufina: Rufina, serif;--wp--preset--font-family--sora: Sora, sans-serif;--wp--preset--font-family--source-sans-3: 'Source Sans 3', sans-serif;--wp--preset--font-family--source-serif-4: 'Source Serif 4', serif;--wp--preset--font-family--space-mono: 'Space Mono', monospace;--wp--preset--font-family--syne: Syne, sans-serif;--wp--preset--font-family--texturina: Texturina, serif;--wp--preset--font-family--urbanist: Urbanist, sans-serif;--wp--preset--font-family--work-sans: 'Work Sans', sans-serif;--wp--preset--spacing--20: 0.44rem;--wp--preset--spacing--30: 0.67rem;--wp--preset--spacing--40: 1rem;--wp--preset--spacing--50: 1.5rem;--wp--preset--spacing--60: 2.25rem;--wp--preset--spacing--70: 3.38rem;--wp--preset--spacing--80: 5.06rem;--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);}:where(.is-layout-flex){gap: 0.5em;}:where(.is-layout-grid){gap: 0.5em;}body .is-layout-flex{display: flex;}.is-layout-flex{flex-wrap: wrap;align-items: center;}.is-layout-flex > :is(*, div){margin: 0;}body .is-layout-grid{display: grid;}.is-layout-grid > :is(*, div){margin: 0;}:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}.has-black-color{color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-color{color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-color{color: var(--wp--preset--color--white) !important;}.has-pale-pink-color{color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-color{color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-color{color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-color{color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-color{color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-color{color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-color{color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-color{color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-color{color: var(--wp--preset--color--vivid-purple) !important;}.has-black-background-color{background-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-background-color{background-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-background-color{background-color: var(--wp--preset--color--white) !important;}.has-pale-pink-background-color{background-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-background-color{background-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-background-color{background-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-background-color{background-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-background-color{background-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-background-color{background-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-background-color{background-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-background-color{background-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-background-color{background-color: var(--wp--preset--color--vivid-purple) !important;}.has-black-border-color{border-color: var(--wp--preset--color--black) !important;}.has-cyan-bluish-gray-border-color{border-color: var(--wp--preset--color--cyan-bluish-gray) !important;}.has-white-border-color{border-color: var(--wp--preset--color--white) !important;}.has-pale-pink-border-color{border-color: var(--wp--preset--color--pale-pink) !important;}.has-vivid-red-border-color{border-color: var(--wp--preset--color--vivid-red) !important;}.has-luminous-vivid-orange-border-color{border-color: var(--wp--preset--color--luminous-vivid-orange) !important;}.has-luminous-vivid-amber-border-color{border-color: var(--wp--preset--color--luminous-vivid-amber) !important;}.has-light-green-cyan-border-color{border-color: var(--wp--preset--color--light-green-cyan) !important;}.has-vivid-green-cyan-border-color{border-color: var(--wp--preset--color--vivid-green-cyan) !important;}.has-pale-cyan-blue-border-color{border-color: var(--wp--preset--color--pale-cyan-blue) !important;}.has-vivid-cyan-blue-border-color{border-color: var(--wp--preset--color--vivid-cyan-blue) !important;}.has-vivid-purple-border-color{border-color: var(--wp--preset--color--vivid-purple) !important;}.has-vivid-cyan-blue-to-vivid-purple-gradient-background{background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;}.has-light-green-cyan-to-vivid-green-cyan-gradient-background{background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;}.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;}.has-luminous-vivid-orange-to-vivid-red-gradient-background{background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;}.has-very-light-gray-to-cyan-bluish-gray-gradient-background{background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;}.has-cool-to-warm-spectrum-gradient-background{background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;}.has-blush-light-purple-gradient-background{background: var(--wp--preset--gradient--blush-light-purple) !important;}.has-blush-bordeaux-gradient-background{background: var(--wp--preset--gradient--blush-bordeaux) !important;}.has-luminous-dusk-gradient-background{background: var(--wp--preset--gradient--luminous-dusk) !important;}.has-pale-ocean-gradient-background{background: var(--wp--preset--gradient--pale-ocean) !important;}.has-electric-grass-gradient-background{background: var(--wp--preset--gradient--electric-grass) !important;}.has-midnight-gradient-background{background: var(--wp--preset--gradient--midnight) !important;}.has-small-font-size{font-size: var(--wp--preset--font-size--small) !important;}.has-medium-font-size{font-size: var(--wp--preset--font-size--medium) !important;}.has-large-font-size{font-size: var(--wp--preset--font-size--large) !important;}.has-x-large-font-size{font-size: var(--wp--preset--font-size--x-large) !important;}.has-albert-sans-font-family{font-family: var(--wp--preset--font-family--albert-sans) !important;}.has-alegreya-font-family{font-family: var(--wp--preset--font-family--alegreya) !important;}.has-arvo-font-family{font-family: var(--wp--preset--font-family--arvo) !important;}.has-bodoni-moda-font-family{font-family: var(--wp--preset--font-family--bodoni-moda) !important;}.has-bricolage-grotesque-font-family{font-family: var(--wp--preset--font-family--bricolage-grotesque) !important;}.has-cabin-font-family{font-family: var(--wp--preset--font-family--cabin) !important;}.has-chivo-font-family{font-family: var(--wp--preset--font-family--chivo) !important;}.has-commissioner-font-family{font-family: var(--wp--preset--font-family--commissioner) !important;}.has-cormorant-font-family{font-family: var(--wp--preset--font-family--cormorant) !important;}.has-courier-prime-font-family{font-family: var(--wp--preset--font-family--courier-prime) !important;}.has-crimson-pro-font-family{font-family: var(--wp--preset--font-family--crimson-pro) !important;}.has-dm-mono-font-family{font-family: var(--wp--preset--font-family--dm-mono) !important;}.has-dm-sans-font-family{font-family: var(--wp--preset--font-family--dm-sans) !important;}.has-dm-serif-display-font-family{font-family: var(--wp--preset--font-family--dm-serif-display) !important;}.has-domine-font-family{font-family: var(--wp--preset--font-family--domine) !important;}.has-eb-garamond-font-family{font-family: var(--wp--preset--font-family--eb-garamond) !important;}.has-epilogue-font-family{font-family: var(--wp--preset--font-family--epilogue) !important;}.has-fahkwang-font-family{font-family: var(--wp--preset--font-family--fahkwang) !important;}.has-figtree-font-family{font-family: var(--wp--preset--font-family--figtree) !important;}.has-fira-sans-font-family{font-family: var(--wp--preset--font-family--fira-sans) !important;}.has-fjalla-one-font-family{font-family: var(--wp--preset--font-family--fjalla-one) !important;}.has-fraunces-font-family{font-family: var(--wp--preset--font-family--fraunces) !important;}.has-gabarito-font-family{font-family: var(--wp--preset--font-family--gabarito) !important;}.has-ibm-plex-mono-font-family{font-family: var(--wp--preset--font-family--ibm-plex-mono) !important;}.has-ibm-plex-sans-font-family{font-family: var(--wp--preset--font-family--ibm-plex-sans) !important;}.has-ibarra-real-nova-font-family{font-family: var(--wp--preset--font-family--ibarra-real-nova) !important;}.has-instrument-serif-font-family{font-family: var(--wp--preset--font-family--instrument-serif) !important;}.has-inter-font-family{font-family: var(--wp--preset--font-family--inter) !important;}.has-josefin-sans-font-family{font-family: var(--wp--preset--font-family--josefin-sans) !important;}.has-jost-font-family{font-family: var(--wp--preset--font-family--jost) !important;}.has-libre-baskerville-font-family{font-family: var(--wp--preset--font-family--libre-baskerville) !important;}.has-libre-franklin-font-family{font-family: var(--wp--preset--font-family--libre-franklin) !important;}.has-literata-font-family{font-family: var(--wp--preset--font-family--literata) !important;}.has-lora-font-family{font-family: var(--wp--preset--font-family--lora) !important;}.has-merriweather-font-family{font-family: var(--wp--preset--font-family--merriweather) !important;}.has-montserrat-font-family{font-family: var(--wp--preset--font-family--montserrat) !important;}.has-newsreader-font-family{font-family: var(--wp--preset--font-family--newsreader) !important;}.has-noto-sans-mono-font-family{font-family: var(--wp--preset--font-family--noto-sans-mono) !important;}.has-nunito-font-family{font-family: var(--wp--preset--font-family--nunito) !important;}.has-open-sans-font-family{font-family: var(--wp--preset--font-family--open-sans) !important;}.has-overpass-font-family{font-family: var(--wp--preset--font-family--overpass) !important;}.has-pt-serif-font-family{font-family: var(--wp--preset--font-family--pt-serif) !important;}.has-petrona-font-family{font-family: var(--wp--preset--font-family--petrona) !important;}.has-piazzolla-font-family{font-family: var(--wp--preset--font-family--piazzolla) !important;}.has-playfair-display-font-family{font-family: var(--wp--preset--font-family--playfair-display) !important;}.has-plus-jakarta-sans-font-family{font-family: var(--wp--preset--font-family--plus-jakarta-sans) !important;}.has-poppins-font-family{font-family: var(--wp--preset--font-family--poppins) !important;}.has-raleway-font-family{font-family: var(--wp--preset--font-family--raleway) !important;}.has-roboto-font-family{font-family: var(--wp--preset--font-family--roboto) !important;}.has-roboto-slab-font-family{font-family: var(--wp--preset--font-family--roboto-slab) !important;}.has-rubik-font-family{font-family: var(--wp--preset--font-family--rubik) !important;}.has-rufina-font-family{font-family: var(--wp--preset--font-family--rufina) !important;}.has-sora-font-family{font-family: var(--wp--preset--font-family--sora) !important;}.has-source-sans-3-font-family{font-family: var(--wp--preset--font-family--source-sans-3) !important;}.has-source-serif-4-font-family{font-family: var(--wp--preset--font-family--source-serif-4) !important;}.has-space-mono-font-family{font-family: var(--wp--preset--font-family--space-mono) !important;}.has-syne-font-family{font-family: var(--wp--preset--font-family--syne) !important;}.has-texturina-font-family{font-family: var(--wp--preset--font-family--texturina) !important;}.has-urbanist-font-family{font-family: var(--wp--preset--font-family--urbanist) !important;}.has-work-sans-font-family{font-family: var(--wp--preset--font-family--work-sans) !important;}
+:where(.wp-block-columns.is-layout-flex){gap: 2em;}:where(.wp-block-columns.is-layout-grid){gap: 2em;}
+:root :where(.wp-block-pullquote){font-size: 1.5em;line-height: 1.6;}
+:where(.wp-block-post-template.is-layout-flex){gap: 1.25em;}:where(.wp-block-post-template.is-layout-grid){gap: 1.25em;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-10-1' href='https://s2.wp.com/_static/??-eJyFT9EKwjAM/CFrGDKZD+K3bF1Wu6VNWVLG/t4OVBRhvoTccXfcwZKM5agYFfSOAQVS7kCXQqyFhY7YTnK0Igf4pxVdCc2SLIcfQ8gmUXY+CsxYQl15HRTVB9wzOWRTqrTqOX4BM1Dr5z3riJpaOz0xBObt9JnKAB8HH72iETsz0WvXe9OWewvX6tzU1alqLvX4ACohc3k=&cssminify=yes' type='text/css' media='all' />
+<style id='jetpack-global-styles-frontend-style-inline-css'>
+:root { --font-headings: unset; --font-base: unset; --font-headings-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif; --font-base-default: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;}
+</style>
+<link crossorigin='anonymous' rel='stylesheet' id='all-css-12-1' href='https://s2.wp.com/wp-content/themes/h4/global.css?m=1420737423i&cssminify=yes' type='text/css' media='all' />
+<script type="text/javascript" id="wpcom-actionbar-placeholder-js-extra">
+/* <![CDATA[ */
+var actionbardata = {"siteID":"14987813","postID":"0","siteURL":"https:\/\/lahso.megginson.com","xhrURL":"https:\/\/lahso.megginson.com\/wp-admin\/admin-ajax.php","nonce":"930abb8e4d","isLoggedIn":"","statusMessage":"","subsEmailDefault":"instantly","proxyScriptUrl":"https:\/\/s0.wp.com\/wp-content\/js\/wpcom-proxy-request.js?ver=20211021","i18n":{"followedText":"New posts from this site will now appear in your <a href="https://lahso.megginson.com/page/3/\&quot;https:\/\/wordpress.com\/read\&quot;">Reader<\/a>","foldBar":"Collapse this bar","unfoldBar":"Expand this bar"}};
+/* ]]> */
+</script>
+<script type="text/javascript" id="jetpack-mu-wpcom-settings-js-before">
+/* <![CDATA[ */
+var JETPACK_MU_WPCOM_SETTINGS = {"assetsUrl":"https:\/\/s1.wp.com\/wp-content\/mu-plugins\/jetpack-mu-wpcom-plugin\/moon\/vendor\/automattic\/jetpack-mu-wpcom\/src\/build\/"};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s1.wp.com/_static/??/wp-content/js/rlt-proxy.js,/wp-content/blog-plugins/wordads-classes/js/cmp/v2/cmp-non-gdpr.js?m=1720530689j'></script>
+<script type="text/javascript" id="rlt-proxy-js-after">
+/* <![CDATA[ */
+	rltInitialize( {"token":null,"iframeOrigins":["https:\/\/widgets.wp.com"]} );
+/* ]]> */
+</script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://lahso.wordpress.com/xmlrpc.php?rsd" />
+<meta name="generator" content="WordPress.com" />
+<link rel='shortlink' href='https://wp.me/10T0V' />
+
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Land and Hold Short" />
+<meta property="og:description" content="Flying a small plane." />
+<meta property="og:url" content="https://lahso.megginson.com/" />
+<meta property="og:site_name" content="Land and Hold Short" />
+<meta property="og:image" content="https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=200&#038;ts=1736523317" />
+<meta property="og:image:width" content="200" />
+<meta property="og:image:height" content="200" />
+<meta property="og:image:alt" content="" />
+<meta property="og:locale" content="en_US" />
+
+<!-- End Jetpack Open Graph Tags -->
+<link rel="shortcut icon" type="image/x-icon" href="https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=32" sizes="16x16" />
+<link rel="icon" type="image/x-icon" href="https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=32" sizes="16x16" />
+<link rel="apple-touch-icon" href="https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=114" />
+<link rel='openid.server' href='../../index.html%3Fopenidserver=1.html' />
+<link rel='openid.delegate' href='../../index.html' />
+<link rel="search" type="application/opensearchdescription+xml" href="../../osd.xml" title="Land and Hold Short" />
+<link rel="search" type="application/opensearchdescription+xml" href="https://s1.wp.com/opensearch.xml" title="WordPress.com" />
+		<style type="text/css">
+			.recentcomments a {
+				display: inline !important;
+				padding: 0 !important;
+				margin: 0 !important;
+			}
+
+			table.recentcommentsavatartop img.avatar, table.recentcommentsavatarend img.avatar {
+				border: 0px;
+				margin: 0;
+			}
+
+			table.recentcommentsavatartop a, table.recentcommentsavatarend a {
+				border: 0px !important;
+				background-color: transparent !important;
+			}
+
+			td.recentcommentsavatarend, td.recentcommentsavatartop {
+				padding: 0px 0px 1px 0px;
+				margin: 0px;
+			}
+
+			td.recentcommentstextend {
+				border: none !important;
+				padding: 0px 0px 2px 10px;
+			}
+
+			.rtl td.recentcommentstextend {
+				padding: 0px 10px 2px 0px;
+			}
+
+			td.recentcommentstexttop {
+				border: none;
+				padding: 0px 0px 0px 10px;
+			}
+
+			.rtl td.recentcommentstexttop {
+				padding: 0px 10px 0px 0px;
+			}
+		</style>
+		<meta name="application-name" content="Land and Hold Short" /><meta name="msapplication-window" content="width=device-width;height=device-height" /><meta name="msapplication-tooltip" content="Flying a small plane." /><meta name="description" content="Flying a small plane." />
+<script type="text/javascript">
+/* <![CDATA[ */
+var wa_smart = { 'network_id': 3905, 'site_id': 474853, 'page_id': 1572546, 'blog_id': 14987813, 'post_id': null, 'theme': 'pub/twentyten', 'target': 'wp_blog_id=14987813;language=en', '_': { 'title': 'Advertisement', 'privacy_settings': 'Privacy Settings' }, 'top': { 'enabled': false, 'adflow_enabled': true, 'format_id': 135099 }, 'inline': { 'enabled': false, 'adflow_enabled': true, 'format_id': 110354, 'max_slots': 20, 'max_blaze_slots': 20 }, 'belowpost': { 'enabled': false, 'adflow_enabled': true, 'format_id': 134071 }, 'bottom_sticky': { 'enabled': false, 'adflow_enabled': true, 'format_id': 117571 }, 'sidebar': { 'enabled': false, 'adflow_enabled': true, 'format_id': 134686 }, 'sidebar_sticky_right': { 'enabled': false, 'adflow_enabled': true, 'format_id': 135281 }, 'gutenberg_rectangle': { 'enabled': false, 'adflow_enabled': true, 'format_id': 134788 }, 'gutenberg_leaderboard': { 'enabled': false, 'adflow_enabled': true, 'format_id': 135073 }, 'gutenberg_mobile_leaderboard': { 'enabled': false, 'adflow_enabled': true, 'format_id': 135098 }, 'gutenberg_skyscraper': { 'enabled': false, 'adflow_enabled': true, 'format_id': 135088 }, 'sidebar_widget_mediumrectangle': { 'enabled': false, 'adflow_enabled': true, 'format_id': 137624 }, 'sidebar_widget_leaderboard': { 'enabled': false, 'adflow_enabled': true, 'format_id': 137625 }, 'sidebar_widget_wideskyscraper': { 'enabled': false, 'adflow_enabled': true, 'format_id': 137626 }, 'shortcode': { 'enabled': false, 'adflow_enabled': true, 'format_id': 137678 } }; wa_smart.cmd = [];
+/* ]]> */
+</script>
+		<script type="text/javascript">
+		function __ATA_CC() {var v = document.cookie.match('(^|;) ?personalized-ads-consent=([^;]*)(;|$)');return v ? 1 : 0;}
+		var __ATA_PP = { 'pt': 0, 'ht': 0, 'tn': 'twentyten', 'uloggedin': 0, 'amp': false, 'consent': __ATA_CC(), 'gdpr_applies': false, 'ad': { 'label': { 'text': 'Advertisements' }, 'reportAd': { 'text': 'Report this ad' } }, 'disabled_slot_formats': [], 'siteid': 8982, 'blogid': 14987813 };
+		var __ATA = __ATA || {};
+		__ATA.cmd = __ATA.cmd || [];
+		__ATA.criteo = __ATA.criteo || {};
+		__ATA.criteo.cmd = __ATA.criteo.cmd || [];
+		</script>
+		<script type="text/javascript">
+		(function(){var g=Date.now||function(){return+new Date};function h(a,b){a:{for(var c=a.length,d="string"==typeof a?a.split(""):a,e=0;e<c;e++)if(e in d&&b.call(void 0,d[e],e,a)){b=e;break a}b=-1}return 0>b?null:"string"==typeof a?a.charAt(b):a[b]};function k(a,b,c){c=null!=c?"="+encodeURIComponent(String(c)):"";if(b+=c){c=a.indexOf("#");0>c&&(c=a.length);var d=a.indexOf("?");if(0>d||d>c){d=c;var e=""}else e=a.substring(d+1,c);a=[a.substr(0,d),e,a.substr(c)];c=a[1];a[1]=b?c?c+"&"+b:b:c;a=a[0]+(a[1]?"?"+a[1]:"")+a[2]}return a};var l=0;function m(a,b){var c=document.createElement("script");c.src=a;c.onload=function(){b&&b(void 0)};c.onerror=function(){b&&b("error")};a=document.getElementsByTagName("head");var d;a&&0!==a.length?d=a[0]:d=document.documentElement;d.appendChild(c)}function n(a){var b=void 0===b?document.cookie:b;return(b=h(b.split("; "),function(c){return-1!=c.indexOf(a+"=")}))?b.split("=")[1]:""}function p(a){return"string"==typeof a&&0<a.length}
+		function r(a,b,c){b=void 0===b?"":b;c=void 0===c?".":c;var d=[];Object.keys(a).forEach(function(e){var f=a[e],q=typeof f;"object"==q&&null!=f||"function"==q?d.push(r(f,b+e+c)):null!==f&&void 0!==f&&(e=encodeURIComponent(b+e),d.push(e+"="+encodeURIComponent(f)))});return d.filter(p).join("&")}function t(a,b){a||((window.__ATA||{}).config=b.c,m(b.url))}var u=Math.floor(1E13*Math.random()),v=window.__ATA||{};window.__ATA=v;window.__ATA.cmd=v.cmd||[];v.rid=u;v.createdAt=g();var w=window.__ATA||{},x="s.pubmine.com";
+		w&&w.serverDomain&&(x=w.serverDomain);var y="//"+x+"/conf",z=window.top===window,A=window.__ATA_PP&&window.__ATA_PP.gdpr_applies,B="boolean"===typeof A?Number(A):null,C=window.__ATA_PP||null,D=z?document.referrer?document.referrer:null:null,E=z?window.location.href:document.referrer?document.referrer:null,F,G=n("__ATA_tuuid");F=G?G:null;var H=window.innerWidth+"x"+window.innerHeight,I=n("usprivacy"),J=r({gdpr:B,pp:C,rid:u,src:D,ref:E,tuuid:F,vp:H,us_privacy:I?I:null},"",".");
+		(function(a){var b=void 0===b?"cb":b;l++;var c="callback__"+g().toString(36)+"_"+l.toString(36);a=k(a,b,c);window[c]=function(d){t(void 0,d)};m(a,function(d){d&&t(d)})})(y+"?"+J);}).call(this);
+		</script>	<script>
+		var sas_fallback = sas_fallback || [];
+		sas_fallback.push(
+			{ tag: "&lt;div id=&quot;atatags-26942-{{unique_id}}&quot;&gt;&lt;/div&gt;&lt;script&gt;__ATA.cmd.push(function() {__ATA.initDynamicSlot({id: \'atatags-26942-{{unique_id}}\',location: 120,formFactor: \'001\',label: {text: \'Advertisements\',},creative: {reportAd: {text: \'Report this ad\',},privacySettings: {text: \'Privacy\',}}});});&lt;/script&gt;", type: 'belowpost' },
+			{ tag: "&lt;div id=&quot;atatags-26942-{{unique_id}}&quot;&gt;&lt;/div&gt;&lt;script&gt;__ATA.cmd.push(function() {__ATA.initDynamicSlot({id: \'atatags-26942-{{unique_id}}\',location: 310,formFactor: \'001\',label: {text: \'Advertisements\',},creative: {reportAd: {text: \'Report this ad\',},privacySettings: {text: \'Privacy\',}}});});&lt;/script&gt;", type: 'inline' },
+			{ tag: "&lt;div id=&quot;atatags-26942-{{unique_id}}&quot;&gt;&lt;/div&gt;&lt;script&gt;__ATA.cmd.push(function() {__ATA.initDynamicSlot({id: \'atatags-26942-{{unique_id}}\',location: 140,formFactor: \'003\',label: {text: \'Advertisements\',},creative: {reportAd: {text: \'Report this ad\',},privacySettings: {text: \'Privacy\',}}});});&lt;/script&gt;", type: 'sidebar' },
+			{ tag: "&lt;div id=&quot;atatags-26942-{{unique_id}}&quot;&gt;&lt;/div&gt;&lt;script&gt;__ATA.cmd.push(function() {__ATA.initDynamicSlot({id: \'atatags-26942-{{unique_id}}\',location: 110,formFactor: \'002\',label: {text: \'Advertisements\',},creative: {reportAd: {text: \'Report this ad\',},privacySettings: {text: \'Privacy\',}}});});&lt;/script&gt;", type: 'top' }
+		);
+	</script>		<script type="text/javascript">
+
+			window.doNotSellCallback = function() {
+
+				var linkElements = [
+					'a[href="https://wordpress.com/?ref=footer_blog"]',
+					'a[href="https://wordpress.com/?ref=footer_website"]',
+					'a[href="https://wordpress.com/?ref=vertical_footer"]',
+					'a[href^="https://wordpress.com/?ref=footer_segment_"]',
+				].join(',');
+
+				var dnsLink = document.createElement( 'a' );
+				dnsLink.href = 'https://wordpress.com/advertising-program-optout/';
+				dnsLink.classList.add( 'do-not-sell-link' );
+				dnsLink.rel = 'nofollow';
+				dnsLink.style.marginLeft = '0.5em';
+				dnsLink.textContent = 'Do Not Sell or Share My Personal Information';
+
+				var creditLinks = document.querySelectorAll( linkElements );
+
+				if ( 0 === creditLinks.length ) {
+					return false;
+				}
+
+				Array.prototype.forEach.call( creditLinks, function( el ) {
+					el.insertAdjacentElement( 'afterend', dnsLink );
+				});
+
+				return true;
+			};
+
+		</script>
+		<script type="text/javascript">
+	window.google_analytics_uacct = "UA-52447-2";
+</script>
+
+<script type="text/javascript">
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-52447-2']);
+	_gaq.push(['_gat._anonymizeIp']);
+	_gaq.push(['_setDomainName', 'none']);
+	_gaq.push(['_setAllowLinker', true]);
+	_gaq.push(['_initData']);
+	_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+	})();
+</script>
+</head>
+
+<body class="home blog paged paged-3 customizer-styles-applied single-author jetpack-reblog-enabled">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<h1 id="site-title">
+					<span>
+						<a href="../../index.html" title="Land and Hold Short" rel="home">Land and Hold Short</a>
+					</span>
+				</h1>
+				<div id="site-description">Flying a small plane.</div>
+
+									<a class="home-link" href="../../index.html" title="Land and Hold Short" rel="home">
+						<img src="../../wp-content/uploads/2010/08/cropped-img_20100610_1418411.jpg" width="940" height="198" alt="" />
+					</a>
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+								<div class="skip-link screen-reader-text"><a href="index.html#content" title="Skip to content">Skip to content</a></div>
+				<div class="menu"><ul>
+<li ><a href="../../index.html">Home</a></li><li class="page_item page-item-2"><a href="../../about/index.html">About</a></li>
+</ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+	<div id="nav-above" class="navigation">
+		<div class="nav-previous"><a href="../4/index.html" ><span class="meta-nav">&larr;</span> Older posts</a></div>
+		<div class="nav-next"><a href="../2/index.html" >Newer posts <span class="meta-nav">&rarr;</span></a></div>
+	</div><!-- #nav-above -->
+
+
+
+	
+			<div id="post-401" class="post-401 post type-post status-publish format-standard hentry category-general tag-places tag-web">
+			<h2 class="entry-title"><a href="../../2010/08/17/the-flightlog-tag/index.html" rel="bookmark">The #flightlog Twitter&nbsp;hashtag</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2010/08/17/the-flightlog-tag/index.html" title="10:58 pm" rel="bookmark"><span class="entry-date">August 17, 2010</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>I&#8217;ve used the hashtag <a href="http://twitter.com/#search?q=%23flightlog">#flightlog</a> to post information about my last two flights to Twitter:</p>
+<blockquote><p>
+CYRO-CYAM VFR, 4.4 hours flight time (4.2 air time) PIC #flightlog
+</p></blockquote>
+<blockquote><p>
+CYTZ-CYRO IFR 1.8 PIC in a PA-28-161 #flightlog
+</p></blockquote>
+<p>No one is using this hashtag for anything else, and it would make it easy for pilots to find other pilots on Twitter who&#8217;ve flown the same routes or used the same airports.  So far, of course, I&#8217;m the only pilot to find. </p>
+			<div id="atatags-26942-67813e3597737"></div>
+			
+			<script>
+				__ATA.cmd.push(function() {
+					__ATA.initDynamicSlot({
+						id: 'atatags-26942-67813e3597737',
+						location: 120,
+						formFactor: '001',
+						label: {
+							text: 'Advertisements',
+						},
+						creative: {
+							reportAd: {
+								text: 'Report this ad',
+							},
+							privacySettings: {
+								text: 'Privacy',
+								
+							}
+						}
+					});
+				});
+			</script>							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/places/index.html" rel="tag">places</a>, <a href="../../tag/web/index.html" rel="tag">web</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2010/08/17/the-flightlog-tag/index.html#comments">1 Comment</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-401 -->
+
+		
+	
+
+	
+			<div id="post-382" class="post-382 post type-post status-publish format-standard hentry category-general tag-aviating tag-navigation tag-tips">
+			<h2 class="entry-title"><a href="../../2010/08/14/why-checkpoints-matter/index.html" rel="bookmark">Why checkpoints matter</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2010/08/14/why-checkpoints-matter/index.html" title="12:36 pm" rel="bookmark"><span class="entry-date">August 14, 2010</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>Let&#8217;s say that you&#8217;re going on a 300 nm (550 km) flight — a typical distance for a cross-country trip in a small plane — VFR, without radar coverage. &nbsp;You file a flight plan, take off on time, but don&#8217;t arrive at your destination. &nbsp;A couple of hours after your planned arrival time, once flight services has completed a few phone calls (your destination airport, your cell phone, your emergency contact) and confirmed that you haven&#8217;t landed safely and forgotten to close your flight plan, a formal search begins.</p>
+<p>Where do they look?</p>
+<h3>Point A to Point B</h3>
+<p>Let&#8217;s say that you filed your flight plan from Point A to Point B and that there are no obvious barriers (mountains, large bodies of water, restricted airspace). &nbsp;I&#8217;m not sure exactly how SAR works, but let&#8217;s assume that they&#8217;ll search within a 5 nm radius of each airport, and along your route of flight from those circles, allowing for a 10° drift in either direction. &nbsp;The search area appears in grey below (not to scale):</p>
+<div data-shortcode="caption" id="attachment_383" style="width: 650px" class="wp-caption aligncenter"><a href="../../wp-content/uploads/2010/08/search-and-rescue.png"><img aria-describedby="caption-attachment-383" data-attachment-id="383" data-permalink="https://lahso.megginson.com/2010/08/14/why-checkpoints-matter/search-and-rescue/" data-orig-file="https://lahso.megginson.com/wp-content/uploads/2010/08/search-and-rescue.png" data-orig-size="682,263" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;}" data-image-title="search-and-rescue" data-image-description="" data-image-caption="" data-medium-file="https://lahso.megginson.com/wp-content/uploads/2010/08/search-and-rescue.png?w=300" data-large-file="https://lahso.megginson.com/wp-content/uploads/2010/08/search-and-rescue.png?w=640" class="size-full wp-image-383" title="search-and-rescue" src="../../wp-content/uploads/2010/08/search-and-rescue.png%3Fw=640&amp;h=246" alt="" width="640" height="246" srcset="../../wp-content/uploads/2010/08/search-and-rescue.png%3Fw=638&amp;h=246=246 63../../wp-content/uploads/2010/08/search-and-rescue.png%3Fw=150&amp;h=58amp;h=5../../wp-content/uploads/2010/08/search-and-rescue.png%3Fw=300&amp;h=11600&amp;../../wp-content/uploads/2010/08/search-and-rescue.pngd-rescue.png 682w" sizes="(max-width: 640px) 100vw, 640px" /></a><p id="caption-attachment-383" class="wp-caption-text">Point A to Point B search area.</p></div>
+<p>For a 300 nm flight, using my very rusty high school geometry skills, I calculate the search area to be nearly 9,500 nm²! &nbsp;That&#8217;s a lot of forest to search for a little plane with an unconscious pilot strapped into the front seat.</p>
+<h3>Point A to Point B (via Point C)</h3>
+<p>Fortunately, we can improve our chances quite a bit, simply by providing a checkpoint halfway through the flight:</p>
+<div data-shortcode="caption" id="attachment_384" style="width: 650px" class="wp-caption aligncenter"><a href="../../wp-content/uploads/2010/08/search-and-rescue-2.png"><img aria-describedby="caption-attachment-384" data-attachment-id="384" data-permalink="https://lahso.megginson.com/2010/08/14/why-checkpoints-matter/search-and-rescue-2/" data-orig-file="https://lahso.megginson.com/wp-content/uploads/2010/08/search-and-rescue-2.png" data-orig-size="682,263" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;}" data-image-title="search-and-rescue-2" data-image-description="&lt;p&gt;Point A to Point B via Point C, a checkpoint halfway through the flight.&lt;/p&gt;
+" data-image-caption="" data-medium-file="https://lahso.megginson.com/wp-content/uploads/2010/08/search-and-rescue-2.png?w=300" data-large-file="https://lahso.megginson.com/wp-content/uploads/2010/08/search-and-rescue-2.png?w=640" class="size-full wp-image-384" title="search-and-rescue-2" src="../../wp-content/uploads/2010/08/search-and-rescue-2.png%3Fw=640&amp;h=246" alt="" width="640" height="246" srcset="../../wp-content/uploads/2010/08/search-and-rescue-2.png%3Fw=638&amp;h=246=246 63../../wp-content/uploads/2010/08/search-and-rescue-2.png%3Fw=150&amp;h=58amp;h=5../../wp-content/uploads/2010/08/search-and-rescue-2.png%3Fw=300&amp;h=11600&amp;../../wp-content/uploads/2010/08/search-and-rescue-2.pngrescue-2.png 682w" sizes="(max-width: 640px) 100vw, 640px" /></a><p id="caption-attachment-384" class="wp-caption-text">Point A to Point B via Point C search area.</p></div>
+<p style="text-align:left;">Now that Search and Rescue knows that you intended to fly via Point C (represented by the yellow triangle), rather than, say, flying to the north for better scenery, or to the south to buzz your buddy&#8217;s cottage, they can anchor their drift lines at an additional point, cutting out a lot of search area (I&#8217;m still allowing a 5 nm circle of ambiguity around the checkpoint). &nbsp;I calculate that the search area is now reduced from nearly 9,500 nm² to just under 5,500 nm², a reduction of over 40% simply by adding one checkpoint in the flight plan.</p>
+<h3>Point C to Point B</h3>
+<p>But wait, there&#8217;s more! &nbsp;Let&#8217;s say that, when you were over Point C (your midway checkpoint), you actually made a call to flight services and gave a position report. &nbsp;Now there&#8217;s no need to search anything before Point C, because they know you passed it before you made your forced landing:</p>
+<div data-shortcode="caption" id="attachment_387" style="width: 650px" class="wp-caption aligncenter"><a href="../../wp-content/uploads/2010/08/search-and-rescue-3.png"><img aria-describedby="caption-attachment-387" data-attachment-id="387" data-permalink="https://lahso.megginson.com/2010/08/14/why-checkpoints-matter/search-and-rescue-3/" data-orig-file="https://lahso.megginson.com/wp-content/uploads/2010/08/search-and-rescue-3.png" data-orig-size="682,263" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;}" data-image-title="search-and-rescue-3" data-image-description="&lt;p&gt;Point C to Point B search area, after having made a radio call over Point C.&lt;/p&gt;
+" data-image-caption="" data-medium-file="https://lahso.megginson.com/wp-content/uploads/2010/08/search-and-rescue-3.png?w=300" data-large-file="https://lahso.megginson.com/wp-content/uploads/2010/08/search-and-rescue-3.png?w=640" class="size-full wp-image-387" title="search-and-rescue-3" src="../../wp-content/uploads/2010/08/search-and-rescue-3.png%3Fw=640&amp;h=246" alt="" width="640" height="246" srcset="../../wp-content/uploads/2010/08/search-and-rescue-3.png%3Fw=638&amp;h=246=246 63../../wp-content/uploads/2010/08/search-and-rescue-3.png%3Fw=150&amp;h=58amp;h=5../../wp-content/uploads/2010/08/search-and-rescue-3.png%3Fw=300&amp;h=11600&amp;../../wp-content/uploads/2010/08/search-and-rescue-3.pngrescue-3.png 682w" sizes="(max-width: 640px) 100vw, 640px" /></a><p id="caption-attachment-387" class="wp-caption-text">Search area after making a radio call over Point C.</p></div>
+<p style="text-align:left;">You&#8217;ve reduced the search area from the original 9,500 nm² down to about 2,800 nm² — still a lot, but I&#8217;d bet more on your chances now. &nbsp;Simply choosing a checkpoint, and making a radio call over it, can make a huge difference.</p>
+<h3>Caveats, etc.</h3>
+<p><strong>Flight following</strong> is an even better option, since ATC will know much more precisely where you disappeared from the radar. &nbsp;Unfortunately, flight following at lower altitudes is available only in highly populated areas. &nbsp;In Canada, &nbsp;below 10,000 ft you&#8217;re beyond radar coverage for much of the southern area of the country, not to mention the vast north. &nbsp;Even in the US, radar coverage can be spotty — I&#8217;ve fallen below radar at 7,000 ft when flying IFR in both Maine and New Hampshire, for example, reverting to non-radar reporting procedures.</p>
+<p>A checkpoint makes sense only if you can report over it, which means that you need to be able to <strong>reach flight services</strong>, which is non-trivial at low altitudes away from populated areas. &nbsp;I plan my VFR flights with checkpoints that I know will be in range of an RCO or DRCO; if that doesn&#8217;t work, you can always try relaying your position report through another aircraft (air-to-air range is much further than air-to-ground).</p>
+<p>Another interesting option for people who fly a lot in remote areas is the <strong>Spot personal messenger</strong> (<a href="http://www.findmespot.ca/en/">site</a>), which updates your position continuously via GPS and satellite and displays it on a web site.  I haven&#8217;t tried it yet, but the price looks reasonable.  It would be critical to mention the Spot in the remarks for your VFR flight plan, so that SAR would know to go to the site and check your flight path.</p>
+<div id="atatags-370373-67813e3599d90">
+		<script type="text/javascript">
+			__ATA.cmd.push(function() {
+				__ATA.initVideoSlot('atatags-370373-67813e3599d90', {
+					sectionId: '370373',
+					format: 'inread'
+				});
+			});
+		</script>
+	</div>							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/aviating/index.html" rel="tag">aviating</a>, <a href="../../tag/navigation/index.html" rel="tag">navigation</a>, <a href="../../tag/tips/index.html" rel="tag">tips</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2010/08/14/why-checkpoints-matter/index.html#comments">5 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-382 -->
+
+		
+	
+
+	
+			<div id="post-369" class="post-369 post type-post status-publish format-standard hentry category-general tag-aviating tag-tips">
+			<h2 class="entry-title"><a href="../../2010/08/13/the-fuel-and-weight-dilemma/index.html" rel="bookmark">The fuel and weight&nbsp;dilemma</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2010/08/13/the-fuel-and-weight-dilemma/index.html" title="2:05 pm" rel="bookmark"><span class="entry-date">August 13, 2010</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p><a href="../../wp-content/uploads/2010/08/img_20100807_093549.jpg"><img data-attachment-id="379" data-permalink="https://lahso.megginson.com/2010/08/13/the-fuel-and-weight-dilemma/img_20100807_093549/" data-orig-file="https://lahso.megginson.com/wp-content/uploads/2010/08/img_20100807_093549.jpg" data-orig-size="2592,1944" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;Nexus One&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;1281173749&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;4.31&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;}" data-image-title="Fueling the plane." data-image-description="" data-image-caption="" data-medium-file="https://lahso.megginson.com/wp-content/uploads/2010/08/img_20100807_093549.jpg?w=300" data-large-file="https://lahso.megginson.com/wp-content/uploads/2010/08/img_20100807_093549.jpg?w=640" loading="lazy" class="alignleft size-medium wp-image-379" title="Fueling the plane." src="../../wp-content/uploads/2010/08/img_20100807_093549.jpg%3Fw=300&amp;h=225" alt="Fueling C-FBJO." width="300" height="225" srcset="../../wp-content/uploads/2010/08/img_20100807_093549.jpg%3Fw=300 300w, ../../wp-content/uploads/2010/08/img_20100807_093549.jpg%3Fw=600 600w, ../../wp-content/uploads/2010/08/img_20100807_093549.jpg%3Fw=150 150w" sizes="(max-width: 300px) 100vw, 300px" /></a></p>
+<p>Last week I wrote about <a href="../../2010/08/07/the-summer-flying-dilemma/index.html">the summer flying dilemma</a>, the challenge of balancing passenger comfort, speed, and the rising summer cumulus clouds.  Pilots face a whole series of dilemmas like that with every flight — in fact, it&#8217;s probably fair to say that flying is more about finding balanced solutions to different dilemmas than it is managing the yoke, rudder, and throttle.</p>
+<h3>Weight vs. time</h3>
+<p>This week, I had to deal with a different challenge, <strong>the fuel and weight dilemma</strong>.  A few years ago, I never had to worry about this one: my Piper Warrior can carry 665 lb when the fuel tanks are full, and that was enough for my whole family of four, our dog, and luggage, so filling the tanks for every flight was a no-brainer.  Now my girls have grown into intelligent and beautiful women, and I&#8217;ve gone the other direction by putting on a few extra pounds, so I have to start thinking about fuel and weight.</p>
+<h3>Trade-offs</h3>
+<p>Here are the kind of options I consider before every flight:</p>
+<table>
+<tbody>
+<tr>
+<th>Fuel</th>
+<th>Endurance</th>
+<th>Remaining load</th>
+<th>Can carry</th>
+</tr>
+<tr>
+<td>48 gal</td>
+<td>5:35</td>
+<td>665 lb</td>
+<td>Family and nothing else.</p>
+<p>Three of us and 150 lb luggage.</p>
+<p>Me and 455 lb luggage.</td>
+</tr>
+<tr>
+<td>35 gal</td>
+<td>4:00</td>
+<td>743 lb</td>
+<td>Family and 80 lb of luggage</p>
+<p>Family, dog, and 40 lb of luggage</p>
+<p>Three of us and 230 lb luggage</td>
+</tr>
+<tr>
+<td>24 gal</td>
+<td>2:40</td>
+<td>809 lb</td>
+<td>Family, dog, and 105 lb luggage</td>
+</tr>
+<tr>
+<td>20 gal</td>
+<td>2:10</td>
+<td>883 lb</td>
+<td>Family, dog, and 130 lb luggage</td>
+</tr>
+</tbody>
+</table>
+<h3>Additional considerations</h3>
+<p>You have to consider a few points when looking over these choices:</p>
+<ul>
+<li>There is some stuff I <em>have</em> to carry in the plane — charts, Pilot Operating Handbook, tow bar, a couple of quarts of oil, some emergency supplies, cover, etc.  That stuff weighs at least 20 lb even when I strip it to its bare minimum, so out of a 40 lb baggage load, only 20 lb would be available for bags — that&#8217;s 5 lb each for four people.</li>
+<li>People rarely fly naked (which is a good thing, given the average pilot&#8217;s age).  Even in the summer, clothes and shoes add an extra 5 lb per person, and people tend to carry purses or backpacks with food, books to read, etc., adding an extra 5 lb each.</li>
+<li>For safety, you need to have a fuel reserve.  The minimum required is 30 minutes (45 minutes at night) VFR, and more, including fuel to get to an alternate airport, IFR.  For me, 2:40 fuel means at most a 1:40 flight VFR, and maybe 1:00 IFR, which isn&#8217;t enough to be useful for cross-country flying (a fuel stop every hour makes for a long flight).</li>
+</ul>
+<p>There are yet other considerations.  A lighter plane will take off in a shorter distance, climb faster, and cruise faster (I see a 5-10 knot difference in cruise speed between just me on board lightly loaded, and wallowing along at maximum gross weight).  It costs time and money to tanker extra fuel along, and could also be a safety issue on a short runway, if there are trees looming at the other end.</p>
+<h3>The PIC&#8217;s burden</h3>
+<p>As with the summer flying weather dilemma, there&#8217;s no automatic right answer for this: that&#8217;s why you&#8217;re pilot-<span style="text-decoration:underline;">in-command</span> — you have to think hard, and trade off one kind of safety or efficiency for another, hoping you&#8217;ve found the best balance.  Airline pilots worry about this even more than small-plane pilots do: someone once pointed out to me that for a 747, every takeoff is a short-field takeoff.</p>
+<p>This week, I got my whole family to <a href="http://www.ourairports.com/airports/CYTZ">Toronto</a> and back safely, IFR both ways, landing with about 1:30 left in the tanks.  It was nerve-wracking having to do such careful fuel management, and telling Porter FBO in Toronto the exact number of litres to put in each tank (rather than &#8220;fill &#8216;er up&#8221;), but it worked.  My fuel burn was exactly as planned, we flew a bit faster for being light, and we got four adults back and forth in a 160 hp airplane.</p>
+<p>Next week, it&#8217;s just me and the my 12-year-old Border Collie flying to <a href="http://www.ourairports.com/airports/CYAM/">the Soo</a>.  I&#8217;ve filled the tanks right up to the brim, and will fly the whole thing non-stop for four hours, IFR or VFR, while the old girl naps in the back seat.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/aviating/index.html" rel="tag">aviating</a>, <a href="../../tag/tips/index.html" rel="tag">tips</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2010/08/13/the-fuel-and-weight-dilemma/index.html#comments">5 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-369 -->
+
+		
+	
+
+	
+			<div id="post-329" class="post-329 post type-post status-publish format-standard hentry category-general tag-web">
+			<h2 class="entry-title"><a href="../../2010/08/08/1-again/index.html" rel="bookmark">#1 again</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2010/08/08/1-again/index.html" title="5:05 pm" rel="bookmark"><span class="entry-date">August 8, 2010</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>That was fast!  Barely are my blogs restored, and Google has already bumped this blog up to the <a href="http://www.google.ca/search?q=land+and+hold+short">#1 search result</a> for the common aviation phrase &#8220;land and hold short&#8221;, ahead of the <a href="http://en.wikipedia.org/wiki/Land_and_hold_short_operations">Wikipedia article</a> (#2) and <a href="index.html">AOPA&#8217;s guide to land and hold short operations</a> (#3). Thanks, GOOG.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/web/index.html" rel="tag">web</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><span>Comments Off<span class="screen-reader-text"> on #1 again</span></span></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-329 -->
+
+		
+	
+
+	
+			<div id="post-346" class="post-346 post type-post status-publish format-standard hentry category-general tag-aviating tag-tips tag-weather">
+			<h2 class="entry-title"><a href="../../2010/08/07/the-summer-flying-dilemma/index.html" rel="bookmark">The summer flying&nbsp;dilemma</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2010/08/07/the-summer-flying-dilemma/index.html" title="9:32 pm" rel="bookmark"><span class="entry-date">August 7, 2010</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p><img align="right" width="300" height="225" src="https://i0.wp.com/upload.wikimedia.org/wikipedia/commons/b/b5/Cumulus_clouds_in_fair_weather.jpeg" /></p>
+<p>On a typical VFR summer day in southern Canada or the northern US — the kind that the weather(wo)men call &#8220;a mixture of sun and cloud&#8221; with a decent amount of humidity — swirling columns of heated air, called <em>thermals</em>, start rising in the morning, and get higher and higher into the late afternoon as the sun warms the ground.  </p>
+<h3>Clouds are the dividing line</h3>
+<p>At the top of those thermal columns, like scoops of ice cream on top of invisible cones, scattered cumulus clouds form.  At first, those clouds might be only 1,000 feet thick and maybe 2,000 ft above the ground, but as the columns rise, the clouds get both higher and thicker, and some of them may develop into storm clouds during the afternoon (giving your typical cottage thunderstorm or 20-minute shower).</p>
+<p>Underneath those clouds the horizontal winds are weaker, but the vertical motion of the thermals can cause a lot of turbulence — while the air may be smooth at breakfast, by early afternoon it can be rough enough to have passengers grabbing for the vomit bags, while the pilot feels like he or she is in a wrestling match with the yoke and rudder pedals.</p>
+<p>Above the clouds, the air is normally smooth, but the winds are much stronger.</p>
+<p>So where do you fly?</p>
+<h3>Flying eastbound</h3>
+<p>Eastbound, the best place to be is above the clouds if you (and your plane) can manage it. Prevailing summer upper winds in this part of the world are from the west or southwest, so on a good summer&#8217;s early afternoon you can get a 25-30 knot tailwind <em>and</em> smooth air at 9,500 ft eastbound.  What&#8217;s not to love?</p>
+<p>The problem is that the tops of those cumulus clouds keep getting higher and higher until almost supper time.  In Canada, you need oxygen to fly above 10,000 ft for more than 30 minutes, and the tops of summer cumulus clouds could hit that height anywhere between 11:00 am and 2:00 pm, even ignoring isolated storm clouds.  As the day goes on, without oxygen and a powerful plane, you hit a point that you can&#8217;t outclimb the clouds any more, and you&#8217;re forced to descend either into them (IFR) or under them (VFR), giving up some of the tailwind, and throwing you and your passengers back into the turbulence.</p>
+<p>The good news is that, with the extra speed from the tailwind, you might be able to finish your trip before that happens.  It&#8217;s possible to fly a Piper Warrior from <a href="http://www.ourairports.com/airports/CYRO/">Ottawa</a> to <a href="http://www.ourairports.com/airports/CYYG/">Charlottetown</a> in well under four hours with a good tailwind, so you can leave early in the morning, fly non-stop, and land for lunch before the clouds (and turbulence) outclimb you.  Your passengers will have to put up with a bumpy descent and landing, but the rest of the flight will be smooth.</p>
+<h3>Flying westbound</h3>
+<p>Flying westbound, into the wind, you&#8217;re faced with a lose-lose proposition:</p>
+<ol>
+<li>Fly below the clouds to get weaker headwinds, but subject your passengers to stomach-emptying turbulence as the day goes on.</li>
+<li>Fly above the clouds to get smooth air, and watch your airspeed drop to (or below) automobile speeds.</li>
+</ol>
+<p>First thing in the morning, you have a good chance to find both smooth air and weak headwinds at low altitudes (e.g. 2,500 ft), but that won&#8217;t last until lunch.  As the cumulus clouds start to form, you&#8217;ll have to pick sides, diving down into the turbulence or climbing up into the headwinds.  And to throw extra salt into your wounds, the headwinds slow you down <em>and</em> make it more likely that you&#8217;ll have to make a fuel stop, slowing you down even more, and pushing your flight later and later into the afternoon and the worst of the turbulence and/or headwinds.  If you do decide to go above, even that won&#8217;t last: in a low-end plane without oxygen, you&#8217;ll eventually have to go down below and start banging your passengers&#8217; (and your) heads against the ceiling of your plane.</p>
+<h3>Flying north- or southbound</h3>
+<p>In Canada, it&#8217;s safe to say that most cross-country flying is on the east-west axis, since Canadian cities are spread out in a thin line along the US border.  In the US, on the other hand, you&#8217;re just as likely to be flying on the north-south axis (or something in-between).  In that case, if the upper winds are from the southwest (typical in summer, at least east of the Rockies), then flying southbound will be a lot like flying westbound, but with less severe headwinds, while flying northbound will be like flying eastbound, but with less beneficial tailwinds.</p>
+<h3>Strategies</h3>
+<p>I fly some passengers who suffer from motion sickness, so I spend a lot of time planning around this stuff.  In general, flying eastbound, I&#8217;ll go up above and accept a longer flight to get smooth air, since my passengers would rather be comfortable for 5-6 hours than violently ill for 3-5.  Still, I can&#8217;t protect them from the turbulence when I have to land (fuel stop or destination).</p>
+<p>Of course, I can&#8217;t stay above all day when the sun&#8217;s out — today, coming back from Charlottetown, I started at 2,500 ft in air so smooth you could do calligraphy in the back seat, but by late morning ended up at 10,500 ft over Quebec&#8217;s Eastern Townships trying to stay above the rising cumulus layer. Once my 30 minutes above 10,000 ft were up, I had to descend and subject my passengers to 40 minutes of turbulence below the clouds at the end of the flight. </p>
+<p>If your schedule can handle it, there are some workarounds to minimize the damage:</p>
+<ul>
+<li>Start as early in the morning as possible, if there&#8217;s no fog or low stratus.  Some pilots I&#8217;ve met like to be preflighting as the sun rises.  If your family is willing to wake up at 5:00 or 5:30 am, go for it, and the flight will be more fun (plus you&#8217;ll have more of the day at your destination).</li>
+<li>If your route follows a shoreline or a wide river, fly over water instead of land (staying within gliding distance).  Water tends to be cooler in the summer, and doesn&#8217;t throw up thermals as much.  Often, the best break through a line of thunderstorms will be over water, but don&#8217;t let yourself get pushed offshore.</li>
+<li>Fly in the evening, especially if you have a well-lit destination for landing after dark.  Summer evenings are long-ish, and the air tends to start calming down again around 7:00 pm, give or take, as the ground cools, the thermals die out, and the afternoon cumulus clouds flatten out and disperse.</li>
+<li>Split up the trip.  Instead of two three-hour legs with a fuel stop on your westbound flight, fly halfway, land before lunch, and spend the day.  The next morning (or that evening), fly the second leg in smooth air again.  For example, I could have flown from Charlottetown to <a href="http://www.ourairports.com/airports/CYQB/">Quebec City</a>, spent an afternoon and evening there, and then flown on to Ottawa the next morning.</li>
+<li>Stay on top as long as possible, and descend quickly at your destination.  For passengers who suffer from motion sickness, popping ears are far preferable to a long time down low in turbulence.</li>
+<li>Take up soaring.  Glider pilots love afternoon thermals, because the rising air lets them stay up almost indefinitely — that&#8217;s why you&#8217;ll often see gliders happy circling under a cumulus cloud, while pilots of powered planes are impatient to be back on the ground.</li>
+</ul>
+<p>In the end, though, turbulence and headwinds are facts of summer flying, and not every day is a typical day — you could drag everyone out of bed at 4:30 or 5:00 am and still be in bumps the whole flight, and you could even end up with headwinds in both directions.  Don&#8217;t pressure yourself to make the flight perfect and control things outside your control: just do your best with whatever you have to work with.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/aviating/index.html" rel="tag">aviating</a>, <a href="../../tag/tips/index.html" rel="tag">tips</a>, <a href="../../tag/weather/index.html" rel="tag">weather</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2010/08/07/the-summer-flying-dilemma/index.html#comments">5 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-346 -->
+
+		
+	
+
+	
+			<div id="post-3" class="post-3 post type-post status-publish format-standard hentry category-uncategorized tag-weather">
+			<h2 class="entry-title"><a href="../../2010/08/02/thor-doesnt-want-you-to-fly-today/index.html" rel="bookmark">Thor doesn&#8217;t want you to fly&nbsp;today</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2010/08/02/thor-doesnt-want-you-to-fly-today/index.html" title="9:04 am" rel="bookmark"><span class="entry-date">August 2, 2010</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p><a href="../../wp-content/uploads/2010/08/tempmapwx_e.gif"><img data-attachment-id="327" data-permalink="https://lahso.megginson.com/2010/08/02/thor-doesnt-want-you-to-fly-today/tempmapwx_e/" data-orig-file="https://lahso.megginson.com/wp-content/uploads/2010/08/tempmapwx_e.gif" data-orig-size="555,421" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;}" data-image-title="Canadian and US weather, 2010-08-02" data-image-description="" data-image-caption="" data-medium-file="https://lahso.megginson.com/wp-content/uploads/2010/08/tempmapwx_e.gif?w=300" data-large-file="https://lahso.megginson.com/wp-content/uploads/2010/08/tempmapwx_e.gif?w=555" loading="lazy" class="alignnone size-medium wp-image-327" title="Canadian and US weather, 2010-08-02" src="../../wp-content/uploads/2010/08/tempmapwx_e.gif%3Fw=300&amp;h=227" alt="" width="300" height="227" srcset="../../wp-content/uploads/2010/08/tempmapwx_e.gif%3Fw=300 300w, ../../wp-content/uploads/2010/08/tempmapwx_e.gif%3Fw=150 150w, ../../wp-content/uploads/2010/08/tempmapwx_e.gif 555w" sizes="(max-width: 300px) 100vw, 300px" /></a></p>
+<p>So where would <em>you</em> fly in this?  There are thunderstorms right across the country and well north of the Arctic Circle, and then snow.</p>
+<p style="font-size:smaller;">(Source: Environment Canada, <a href="http://www.weatheroffice.gc.ca/jet_stream/index_e.html">Canadian Weather at a Glance</a>.)</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/uncategorized/index.html" rel="category tag">Uncategorized</a>					</span>
+					<span class="meta-sep">|</span>
+				
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/weather/index.html" rel="tag">weather</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><span>Comments Off<span class="screen-reader-text"> on Thor doesn&#8217;t want you to fly&nbsp;today</span></span></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-3 -->
+
+		
+	
+
+	
+			<div id="post-292" class="post-292 post type-post status-publish format-standard hentry tag-places">
+			<h2 class="entry-title"><a href="../../2010/08/01/august-flying/index.html" rel="bookmark">August flying</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2010/08/01/august-flying/index.html" title="1:35 pm" rel="bookmark"><span class="entry-date">August 1, 2010</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>To celebrate the return of the <a href="http://www.megginson.com/blogs/lahso/">Land and Hold Short</a> blog after a hiatus of several weeks, I&#8217;ll list the airports I plan to fly to in August:</p>
+<ul>
+<li><a href="http://www.ourairports.com/airports/CYYG/">Charlottetown Airport</a> in Charlottetown, PEI.</li>
+<li><a href="http://www.ourairports.com/airports/CYTZ/">Toronto City Centre Airport</a> (can&#8217;t bring myself to call it &#8220;Billy Bishop&#8221; yet) in Toronto, Ontario, for the third time this year.</li>
+<li><a href="http://www.ourairports.com/airports/CYAM/">Sault Ste. Marie Airport</a> in Sault Ste. Marie, ON.</li>
+<li><a href="http://www.ourairports.com/airports/KBVY/">Beverly Municipal Airport</a> just north of Boston, MA.</li>
+</ul>
+<p>All of the trips will be starting from my home airport of <a href="http://www.ourairports.com/airports/CYRO/">Ottawa/Rockcliffe</a>.  I was thinking of trying to squeeze in a flight up north to <a href="http://www.ourairports.com/airports/CYMO/">Moosonee Airport</a> as well, but I can&#8217;t see where I could fit it in.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+								
+								<span class="tag-links">
+					<span class="entry-utility-prep entry-utility-prep-tag-links">Tagged</span> <a href="../../tag/places/index.html" rel="tag">places</a>				</span>
+				<span class="meta-sep">|</span>
+				
+				<span class="comments-link"><a href="../../2010/08/01/august-flying/index.html#comments">1 Comment</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-292 -->
+
+		
+	
+
+	
+			<div id="post-288" class="post-288 post type-post status-publish format-standard hentry category-general">
+			<h2 class="entry-title"><a href="../../2010/05/18/aztec-single-engine-takeoff/index.html" rel="bookmark">Aztec single-engine takeoff</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2010/05/18/aztec-single-engine-takeoff/index.html" title="4:46 pm" rel="bookmark"><span class="entry-date">May 18, 2010</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p><img src="https://i0.wp.com/upload.wikimedia.org/wikipedia/commons/7/79/Piper_Aztec_Pa-23E.jpg" alt="A Piper Aztec (not the accident aircraft)." width="300" align="right" /></p>
+<p>I just noticed this now in Transport Canada publication.  I&#8217;m reproducing it here because I cannot link to it directly (links added by me):</p>
+<blockquote><p>
+On August 24, 2009, the pilot of a privately-owned <a href="http://en.wikipedia.org/wiki/Piper_PA-23">Piper PA23-250</a> arriving from the United States stopped in <a href="http://www.ourairports.com/airports/CYFD/">Brantford, Ont.</a>, to clear customs before continuing to his private strip. When the pilot was preparing to depart Brantford, he was unable to start the right engine. The pilot elected to attempt a single-engine takeoff from Runway 23. During the take-off roll, the pilot was unable to maintain directional control; the aircraft departed the right side of the runway just before the intersection of Taxiway Echo and Runway 23. The aircraft struck a taxiway light and continued across the taxiway before becoming airborne. The aircraft began a slow climb but was unable to clear trees at the edge of the airport property. The aircraft’s right wing struck a tree approximately 20 ft off the ground, severing the outboard portion of the right wing. The aircraft <a href="http://www.brantfordexpositor.ca/ArticleDisplay.aspx?e=1713744">crashed into a cornfield</a> approximately 300 ft beyond the tree and sustained substantial damage. The pilot was the only occupant on board and received minor injuries.</p>
+<p><em>TSB File A09O0179.</em>
+</p></blockquote>
+<p>You can search for the source on <a href="http://www.tc.gc.ca/civilaviation/publications/tp185/2-10/accident.htm">this page</a>.</p>
+<p>Note that the <a href="http://www.brantfordexpositor.ca/ArticleDisplay.aspx?e=1713744">news story</a> linked above claims that an engine &#8220;seized&#8221; shortly after takeoff, but the later TSB summary contradicts that.  The newspaper version is more believable &mdash; it&#8217;s hard to imagine any pilot knowingly doing a single-engine takeoff in a light twin!</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+				
+				<span class="comments-link"><a href="../../2010/05/18/aztec-single-engine-takeoff/index.html#comments">5 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-288 -->
+
+		
+	
+
+	
+			<div id="post-287" class="post-287 post type-post status-publish format-standard hentry category-general">
+			<h2 class="entry-title"><a href="../../2010/03/24/major-ottawa-airspace-change-on-8-april/index.html" rel="bookmark">Major Ottawa Airspace Change on 8&nbsp;April</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2010/03/24/major-ottawa-airspace-change-on-8-april/index.html" title="4:12 pm" rel="bookmark"><span class="entry-date">March 24, 2010</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>With almost no fanfare, there will be a major change in Ottawa&#8217;s airspace in a couple of weeks.  Information about the change is buried deep in <a href="https://docs.google.com/viewer?url=http://www.navcanada.ca/ContentDefinitionFiles/Publications/AeronauticalInfoProducts/AIP/Current/PDF/EN/part_5_aic/5aic_eng.pdf">this PDF file</a> (thanks to <a href="http://fly.blakecrosby.com/">Blake Crosby</a> for the heads-up).  Here&#8217;s a page from the 8 April 2010 CFS with the new airspace:</p>
+<p><a href="http://www.megginson.com/img/cyro-airspace.png"><img src="https://i0.wp.com/www.megginson.com/img/cyro-airspace.png" alt="" width="640" height="381" /></a></p>
+<p>In case the AIC link dies, or you don&#8217;t feel like searching the whole file, here&#8217;s the relevant text:</p>
+<blockquote><p>AERONAUTICAL INFORMATION CIRCULAR 4/10<br />
+OTTAWA/GATINEAU, QUÉBEC<br />
+CHANGES TO THE OTTAWA/GATINEAU CONTROL ZONE</p>
+<p>NAV CANADA, the country&#8217;s provider of civil air navigation services, conducted an aeronautical study that evaluated the airspace and publications in Ottawa, Ontario and the surrounding airports. The study recommended changes to the airspace and publications for Ottawa International, Ottawa/Gatineau, Ottawa/Rockcliffe, and Ottawa/Carp airports. These changes will be implemented over a period of time.</p>
+<p>The first planned change is to extend the Ottawa/Gatineau control zone south, to the south side of the Ottawa River, with an exclusion over the river at 700 feet above ground level (AGL) and below.<br />
+This change will take effect 8 April 2010 at 0901 Coordinated Universal Time (UTC). The appropriate<br />
+aeronautical publications will be amended.</p>
+<p>For further information, please contact: [&#8230;]</p></blockquote>
+<p>This may sound innocent enough, extending the <a href="http://www.ourairports.com/airports/CYND/">Gatineau Airport</a> control zone from the north shore of the Ottawa River less than a mile to the south shore, but it effectively closes off the only eastbound class G corridor out of Ottawa, one used very heavily by pilots from <a href="http://www.ourairports.com/airports/CYRO/">Rockcliffe Airport</a>.  This will now be <em>mandatory frequency</em> (MF) airspace while the Gatineau FSS is open, and we&#8217;ll all have to call Gatineau as soon as we take off from Rockcliffe.</p>
+<p>Making an extra radio call isn&#8217;t a big deal, but I wonder how many Ottawa pilots will notice this change in the new CFS, or the AIC buried deep in that PDF file?  I learned about it only because a pilot from Toronto told me.  As far as I know, there has been no major effort to reach out and inform local pilots — no mention in emails from local flying clubs, blogs, etc., and the chief instructor at at least one of the local flying clubs was unaware this morning of when it was coming in or exactly what the change would be.  I wouldn&#8217;t be surprised to see dozens of airspace vios after April 8, as pilots follow the same route they&#8217;ve followed for years without realizing they have to make a now-mandatory call to Gatineau.  Normally, I&#8217;d have expected to be hearing about something like this for months before it happened.</p>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+				
+				<span class="comments-link"><a href="../../2010/03/24/major-ottawa-airspace-change-on-8-april/index.html#comments">6 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-287 -->
+
+		
+	
+
+	
+			<div id="post-286" class="post-286 post type-post status-publish format-standard hentry category-general">
+			<h2 class="entry-title"><a href="../../2010/02/21/online-aips/index.html" rel="bookmark">Online AIPs</a></h2>
+
+			<div class="entry-meta">
+				<span class="meta-prep meta-prep-author">Posted on</span> <a href="../../2010/02/21/online-aips/index.html" title="11:48 am" rel="bookmark"><span class="entry-date">February 21, 2010</span></a> <span class="meta-sep">by</span> <span class="author vcard"><a class="url fn n" href="../../author/davidmegginson/index.html" title="View all posts by David Megginson">David Megginson</a></span>			</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+				<p>I&#8217;m using this post as a place to accumulate links to different countries&#8217; online <a href="http://en.wikipedia.org/wiki/Aeronautical_Information_Publication">Aeronautical Information Publications</a> (AIPs), which include airport directories, diagrams, etc.  I&#8217;ll start with a few, and add more countries as I have time, or as people leave comments with links:</p>
+<dl>
+<dt>Afghanistan</dt>
+<dd><a href="http://www.motca.gov.af/important_information.htm">http://www.motca.gov.af/important_information.htm</a></dd>
+<dt>Argentina</dt>
+<dd><a href="http://www.cra.gov.ar/dta/ais/inicio.php">http://www.cra.gov.ar/dta/ais/inicio.php</a></dd>
+<dt>Australia</dt>
+<dd><a href="http://www.airservicesaustralia.com/publications/aip.asp">http://www.airservicesaustralia.com/publications/aip.asp</a></dd>
+<dt>Brazil</dt>
+<dd><a href="http://www.aisweb.aer.mil.br/aisweb/">http://www.aisweb.aer.mil.br/aisweb/</a></dd>
+<dt>Canada</dt>
+<dd><span style="color:red;">Not available online</span>; partial information is available <a href="http://www.tc.gc.ca/CivilAviation/publications/tp14371/menu.htm">here</a> and <a href="http://www.navcanada.ca/NavCanada.asp?Language=en&amp;Content=ContentDefinitionFiles\Publications\AeronauticalInfoProducts\CanadianAirportCharts\default.xml">here</a>, but the actual directory of Canadian airports is paper-only, in the <cite>Canada Flight Supplement</cite></dd>
+<dt>Chile</dt>
+<dd><a href="http://www.aipchile.cl/dasa/aip_chile_con_contenido/index.php">http://www.aipchile.cl/dasa/aip_chile_con_contenido/index.php</a> (limited number of airports)</dd>
+<dt>China</dt>
+<dd>Not available online</dd>
+<dt>Denmark</dt>
+<dd><a href="http://www.slv.dk/Dokumenter/dsweb/View/Collection-95">http://www.slv.dk/Dokumenter/dsweb/View/Collection-95</a> (major airports only)</dd>
+<dt>Estonia</dt>
+<dd><a href="http://aip.eans.ee/">http://aip.eans.ee/</a></dd>
+<dt>Finland</dt>
+<dd><a href="https://ais.fi/ais/eaip/en/">https://ais.fi/ais/eaip/en/</a></dd>
+<dt>France</dt>
+<dd><a href="http://www.sia.aviation-civile.gouv.fr/default_uk.htm">http://www.sia.aviation-civile.gouv.fr/default_uk.htm</a></dd>
+<dt>Germany</dt>
+<dd>Military aerodromes: <a href="http://www.mil-aip.de/">http://www.mil-aip.de/</a></dd>
+<dd>Civilian aerodromes: <span style="color:red;">not available online</span></dd>
+<dt>Iceland</dt>
+<dd><a href="http://www.caa.is/FlugmalahandbokinAIP">http://www.caa.is/FlugmalahandbokinAIP</a></dd>
+<dt>Iran</dt>
+<dd><a href="http://ais.airport.ir/Homepage.aspx?site=ais.airport&amp;lang=fa-IR&amp;tabid=0">http://ais.airport.ir/Homepage.aspx?site=ais.airport&amp;lang=fa-IR&amp;tabid=0</a></dd>
+<dt>Netherlands</dt>
+<dd><a href="http://www.ais-netherlands.nl/">http://www.ais-netherlands.nl/</dd>
+<dt>South Africa</dt>
+<dd><a href="http://www.caa.co.za/resource%20center/Charts/AERONAUTICAL%20CHARTS/charts%20index.htm">http://www.caa.co.za/resource%20center/Charts/AERONAUTICAL%20CHARTS/charts%20index.htm</a></dd>
+</dl>
+							</div><!-- .entry-content -->
+	
+			<div class="entry-utility">
+													<span class="cat-links">
+						<span class="entry-utility-prep entry-utility-prep-cat-links">Posted in</span> <a href="../../category/general/index.html" rel="category tag">General</a>					</span>
+					<span class="meta-sep">|</span>
+				
+				
+				<span class="comments-link"><a href="../../2010/02/21/online-aips/index.html#comments">16 Comments</a></span>
+
+							</div><!-- .entry-utility -->
+		</div><!-- #post-286 -->
+
+		
+	
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="../4/index.html" ><span class="meta-nav">&larr;</span> Older posts</a></div>
+					<div class="nav-next"><a href="../2/index.html" >Newer posts <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+
+		<div id="primary" class="widget-area" role="complementary">
+						<ul class="xoxo">
+
+<li id="block-2" class="widget-container widget_block widget_text">
+<p></p>
+</li><li id="block-3" class="widget-container widget_block widget_text">
+<p>  </p>
+</li>			<div id="atatags-286348-67813e35a38e7"></div>
+			
+			<script>
+				__ATA.cmd.push(function() {
+					__ATA.initDynamicSlot({
+						id: 'atatags-286348-67813e35a38e7',
+						location: 140,
+						formFactor: '003',
+						label: {
+							text: 'Advertisements',
+						},
+						creative: {
+							reportAd: {
+								text: 'Report this ad',
+							},
+							privacySettings: {
+								text: 'Privacy',
+								
+							}
+						}
+					});
+				});
+			</script>			</ul>
+		</div><!-- #primary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="../../index.html" title="Land and Hold Short" rel="home">
+					Land and Hold Short				</a>
+							</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="https://wordpress.com/?ref=footer_website" rel="nofollow">Create a free website or blog at WordPress.com.</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+		<script type="text/javascript">
+		var infiniteScroll = {"settings":{"id":"content","ajaxurl":"https:\/\/lahso.megginson.com\/?infinity=scrolling","type":"scroll","wrapper":true,"wrapper_class":"infinite-wrap","footer":"wrapper","click_handle":"1","text":"Older posts","totop":"Scroll back to top","currentday":"21.02.10","order":"DESC","scripts":[],"styles":[],"google_analytics":false,"offset":3,"history":{"host":"lahso.megginson.com","path":"\/page\/%d\/","use_trailing_slashes":true,"parameters":""},"query_args":{"paged":3,"error":"","m":"","p":0,"post_parent":"","subpost":"","subpost_id":"","attachment":"","attachment_id":0,"name":"","pagename":"","page_id":0,"second":"","minute":"","hour":"","day":0,"monthnum":0,"year":0,"w":0,"category_name":"","tag":"","cat":"","tag_id":"","author":"","author_name":"","feed":"","tb":"","meta_key":"","meta_value":"","preview":"","s":"","sentence":"","title":"","fields":"","menu_order":"","embed":"","category__in":[],"category__not_in":[],"category__and":[],"post__in":[],"post__not_in":[],"post_name__in":[],"tag__in":[],"tag__not_in":[],"tag__and":[],"tag_slug__in":[],"tag_slug__and":[],"post_parent__in":[],"post_parent__not_in":[],"author__in":[],"author__not_in":[],"search_columns":[],"lazy_load_term_meta":false,"posts_per_page":10,"ignore_sticky_posts":false,"suppress_filters":false,"cache_results":true,"update_post_term_cache":true,"update_menu_item_cache":false,"update_post_meta_cache":true,"post_type":"","nopaging":false,"comments_per_page":"50","no_found_rows":false,"order":"DESC"},"query_before":"2025-01-10 10:35:17","last_post_date":"2010-02-21 11:48:21","body_class":"infinite-scroll neverending","loading_text":"Loading new page","stats":"blog=14987813&v=wpcom&tz=-5&user_id=0&subd=lahso&x_pagetype=infinite"}};
+		</script>
+		<!--  -->
+<script type="text/javascript" src="https://0.gravatar.com/js/hovercards/hovercards.min.js?ver=2025027adb6e2923c207f747c3dc6eddb1384af86788793465057178611210635a35bf" id="grofiles-cards-js"></script>
+<script type="text/javascript" id="wpgroho-js-extra">
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s2.wp.com/wp-content/mu-plugins/gravatar-hovercards/wpgroho.js?m=1610363240i'></script>
+
+	<script>
+		// Initialize and attach hovercards to all gravatars
+		( function() {
+			function init() {
+				if ( typeof Gravatar === 'undefined' ) {
+					return;
+				}
+
+				if ( typeof Gravatar.init !== 'function' ) {
+					return;
+				}
+
+				Gravatar.profile_cb = function ( hash, id ) {
+					WPGroHo.syncProfileData( hash, id );
+				};
+
+				Gravatar.my_hash = WPGroHo.my_hash;
+				Gravatar.init(
+					'body',
+					'#wp-admin-bar-my-account',
+					{
+						i18n: {
+							'Edit your profile →': 'Edit your profile →',
+							'View profile →': 'View profile →',
+							'Contact': 'Contact',
+							'Send money': 'Send money',
+							'Sorry, we are unable to load this Gravatar profile.': 'Sorry, we are unable to load this Gravatar profile.',
+							'Profile not found.': 'Profile not found.',
+							'Too Many Requests.': 'Too Many Requests.',
+							'Internal Server Error.': 'Internal Server Error.',
+						},
+					}
+				);
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+	</script>
+
+		<div style="display:none">
+	</div>
+		<div id="infinite-footer">
+			<div class="container">
+				<div class="blog-info">
+					<a id="infinity-blog-title" href="../../index.html" rel="home">
+						Land and Hold Short					</a>
+				</div>
+				<div class="blog-credits">
+					<a href="https://wordpress.com/?ref=footer_blog" rel="nofollow">Blog at WordPress.com.</a> 				</div>
+			</div>
+		</div><!-- #infinite-footer -->
+				<script type="text/javascript">
+		( function() {
+			function init() {
+				document.body.addEventListener( 'is.post-load', function() {
+					if ( typeof __ATA.insertInlineAds === 'function' ) {
+						__ATA.insertInlineAds();
+					}
+				} );
+			}
+
+			if ( document.readyState !== 'loading' ) {
+				init();
+			} else {
+				document.addEventListener( 'DOMContentLoaded', init );
+			}
+		} )();
+		</script>		<!-- CCPA [start] -->
+		<script type="text/javascript">
+			( function () {
+
+				var setupPrivacy = function() {
+
+					// Minimal Mozilla Cookie library
+					// https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie/Simple_document.cookie_framework
+					var cookieLib = window.cookieLib = {getItem:function(e){return e&&decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*"+encodeURIComponent(e).replace(/[\-\.\+\*]/g,"\\$&")+"\\s*\\=\\s*([^;]*).*$)|^.*$"),"$1"))||null},setItem:function(e,o,n,t,r,i){if(!e||/^(?:expires|max\-age|path|domain|secure)$/i.test(e))return!1;var c="";if(n)switch(n.constructor){case Number:c=n===1/0?"; expires=Fri, 31 Dec 9999 23:59:59 GMT":"; max-age="+n;break;case String:c="; expires="+n;break;case Date:c="; expires="+n.toUTCString()}return"rootDomain"!==r&&".rootDomain"!==r||(r=(".rootDomain"===r?".":"")+document.location.hostname.split(".").slice(-2).join(".")),document.cookie=encodeURIComponent(e)+"="+encodeURIComponent(o)+c+(r?"; domain="+r:"")+(t?"; path="+t:"")+(i?"; secure":""),!0}};
+
+					// Implement IAB USP API.
+					window.__uspapi = function( command, version, callback ) {
+
+						// Validate callback.
+						if ( typeof callback !== 'function' ) {
+							return;
+						}
+
+						// Validate the given command.
+						if ( command !== 'getUSPData' || version !== 1 ) {
+							callback( null, false );
+							return;
+						}
+
+						// Check for GPC. If set, override any stored cookie.
+						if ( navigator.globalPrivacyControl ) {
+							callback( { version: 1, uspString: '1YYN' }, true );
+							return;
+						}
+
+						// Check for cookie.
+						var consent = cookieLib.getItem( 'usprivacy' );
+
+						// Invalid cookie.
+						if ( null === consent ) {
+							callback( null, false );
+							return;
+						}
+
+						// Everything checks out. Fire the provided callback with the consent data.
+						callback( { version: 1, uspString: consent }, true );
+					};
+
+					// Initialization.
+					document.addEventListener( 'DOMContentLoaded', function() {
+
+						// Internal functions.
+						var setDefaultOptInCookie = function() {
+							var value = '1YNN';
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'usprivacy', value, 365 * 24 * 60 * 60, '/', domain );
+						};
+
+						var setDefaultOptOutCookie = function() {
+							var value = '1YYN';
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'usprivacy', value, 24 * 60 * 60, '/', domain );
+						};
+
+						var setDefaultNotApplicableCookie = function() {
+							var value = '1---';
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'usprivacy', value, 24 * 60 * 60, '/', domain );
+						};
+
+						var setCcpaAppliesCookie = function( applies ) {
+							var domain = '.wordpress.com' === location.hostname.slice( -14 ) ? '.rootDomain' : location.hostname;
+							cookieLib.setItem( 'ccpa_applies', applies, 24 * 60 * 60, '/', domain );
+						}
+
+						var maybeCallDoNotSellCallback = function() {
+							if ( 'function' === typeof window.doNotSellCallback ) {
+								return window.doNotSellCallback();
+							}
+
+							return false;
+						}
+
+						// Look for usprivacy cookie first.
+						var usprivacyCookie = cookieLib.getItem( 'usprivacy' );
+
+						// Found a usprivacy cookie.
+						if ( null !== usprivacyCookie ) {
+
+							// If the cookie indicates that CCPA does not apply, then bail.
+							if ( '1---' === usprivacyCookie ) {
+								return;
+							}
+
+							// CCPA applies, so call our callback to add Do Not Sell link to the page.
+							maybeCallDoNotSellCallback();
+
+							// We're all done, no more processing needed.
+							return;
+						}
+
+						// We don't have a usprivacy cookie, so check to see if we have a CCPA applies cookie.
+						var ccpaCookie = cookieLib.getItem( 'ccpa_applies' );
+
+						// No CCPA applies cookie found, so we'll need to geolocate if this visitor is from California.
+						// This needs to happen client side because we do not have region geo data in our $SERVER headers,
+						// only country data -- therefore we can't vary cache on the region.
+						if ( null === ccpaCookie ) {
+
+							var request = new XMLHttpRequest();
+							request.open( 'GET', 'https://public-api.wordpress.com/geo/', true );
+
+							request.onreadystatechange = function () {
+								if ( 4 === this.readyState ) {
+									if ( 200 === this.status ) {
+
+										// Got a geo response. Parse out the region data.
+										var data = JSON.parse( this.response );
+										var region      = data.region ? data.region.toLowerCase() : '';
+										var ccpa_applies = ['california', 'colorado', 'connecticut', 'delaware', 'indiana', 'iowa', 'montana', 'new jersey', 'oregon', 'tennessee', 'texas', 'utah', 'virginia'].indexOf( region ) > -1;
+										// Set CCPA applies cookie. This keeps us from having to make a geo request too frequently.
+										setCcpaAppliesCookie( ccpa_applies );
+
+										// Check if CCPA applies to set the proper usprivacy cookie.
+										if ( ccpa_applies ) {
+											if ( maybeCallDoNotSellCallback() ) {
+												// Do Not Sell link added, so set default opt-in.
+												setDefaultOptInCookie();
+											} else {
+												// Failed showing Do Not Sell link as required, so default to opt-OUT just to be safe.
+												setDefaultOptOutCookie();
+											}
+										} else {
+											// CCPA does not apply.
+											setDefaultNotApplicableCookie();
+										}
+									} else {
+										// Could not geo, so let's assume for now that CCPA applies to be safe.
+										setCcpaAppliesCookie( true );
+										if ( maybeCallDoNotSellCallback() ) {
+											// Do Not Sell link added, so set default opt-in.
+											setDefaultOptInCookie();
+										} else {
+											// Failed showing Do Not Sell link as required, so default to opt-OUT just to be safe.
+											setDefaultOptOutCookie();
+										}
+									}
+								}
+							};
+
+							// Send the geo request.
+							request.send();
+						} else {
+							// We found a CCPA applies cookie.
+							if ( ccpaCookie === 'true' ) {
+								if ( maybeCallDoNotSellCallback() ) {
+									// Do Not Sell link added, so set default opt-in.
+									setDefaultOptInCookie();
+								} else {
+									// Failed showing Do Not Sell link as required, so default to opt-OUT just to be safe.
+									setDefaultOptOutCookie();
+								}
+							} else {
+								// CCPA does not apply.
+								setDefaultNotApplicableCookie();
+							}
+						}
+					} );
+				};
+
+				// Kickoff initialization.
+				if ( window.defQueue && defQueue.isLOHP && defQueue.isLOHP === 2020 ) {
+					defQueue.items.push( setupPrivacy );
+				} else {
+					setupPrivacy();
+				}
+
+			} )();
+		</script>
+
+		<!-- CCPA [end] -->
+		<div class="widget widget_eu_cookie_law_widget">
+<div
+	class="hide-on-button ads-active"
+	data-hide-timeout="30"
+	data-consent-expiration="180"
+	id="eu-cookie-law"
+	style="display: none"
+>
+	<form method="post">
+		<input type="submit" value="Close and accept" class="accept" />
+
+		Privacy &amp; Cookies: This site uses cookies. By continuing to use this website, you agree to their use. <br />
+To find out more, including how to control cookies, see here:
+				<a href="https://automattic.com/cookies/" rel="nofollow">
+			Cookie Policy		</a>
+ </form>
+</div>
+</div>	<div id="actionbar" style="display: none;"
+			class="actnbr-pub-twentyten actnbr-has-follow">
+		<ul>
+								<li class="actnbr-btn actnbr-hidden">
+								<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+							<div class="actnbr-popover tip tip-top-left actnbr-notice" id="follow-bubble">
+							<div class="tip-arrow"></div>
+							<div class="tip-inner actnbr-follow-bubble">
+															<ul>
+											<li class="actnbr-sitename">
+			<a href="../../index.html">
+				<img loading='lazy' alt='' src='https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=50&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png' srcset='https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=50&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png 1x, https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=75&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png 1.5x, https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=100&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png 2x, https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=150&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png 3x, https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=200&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png 4x' class='avatar avatar-50' height='50' width='50' />				Land and Hold Short			</a>
+		</li>
+										<div class="actnbr-message no-display"></div>
+									<form method="post" action="https://subscribe.wordpress.com" accept-charset="utf-8" style="display: none;">
+																						<div class="actnbr-follow-count">Join 46 other subscribers</div>
+																					<div>
+										<input type="email" name="email" placeholder="Enter your email address" class="actnbr-email-field" aria-label="Enter your email address" />
+										</div>
+										<input type="hidden" name="action" value="subscribe" />
+										<input type="hidden" name="blog_id" value="14987813" />
+										<input type="hidden" name="source" value="https://lahso.megginson.com/page/3/" />
+										<input type="hidden" name="sub-type" value="actionbar-follow" />
+										<input type="hidden" id="_wpnonce" name="_wpnonce" value="7077b8e6b8" />										<div class="actnbr-button-wrap">
+											<button type="submit" value="Sign me up">
+												Sign me up											</button>
+										</div>
+									</form>
+									<li class="actnbr-login-nudge">
+										<div>
+											Already have a WordPress.com account? <a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Flahso.megginson.com%252F2010%252F08%252F17%252Fthe-flightlog-tag%252F">Log in now.</a>										</div>
+									</li>
+								</ul>
+															</div>
+						</div>
+					</li>
+							<li class="actnbr-ellipsis actnbr-hidden">
+				<svg class="gridicon gridicons-ellipsis" height="24" width="24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M7 12c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2zm12-2c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm-7 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2z"/></g></svg>				<div class="actnbr-popover tip tip-top-left actnbr-more">
+					<div class="tip-arrow"></div>
+					<div class="tip-inner">
+						<ul>
+									<li class="actnbr-sitename">
+			<a href="../../index.html">
+				<img loading='lazy' alt='' src='https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=50&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png' srcset='https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=50&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png 1x, https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=75&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png 1.5x, https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=100&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png 2x, https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=150&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png 3x, https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=200&#038;d=https%3A%2F%2Fs2.wp.com%2Fi%2Flogo%2Fwpcom-gray-white.png 4x' class='avatar avatar-50' height='50' width='50' />				Land and Hold Short			</a>
+		</li>
+								<li class="actnbr-folded-customize">
+								<a href="https://lahso.wordpress.com/wp-admin/customize.php?url=https%3A%2F%2Flahso.wordpress.com%2Fpage%2F3%2F">
+									<svg class="gridicon gridicons-customize" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g><path d="M2 6c0-1.505.78-3.08 2-4 0 .845.69 2 2 2 1.657 0 3 1.343 3 3 0 .386-.08.752-.212 1.09.74.594 1.476 1.19 2.19 1.81L8.9 11.98c-.62-.716-1.214-1.454-1.807-2.192C6.753 9.92 6.387 10 6 10c-2.21 0-4-1.79-4-4zm12.152 6.848l1.34-1.34c.607.304 1.283.492 2.008.492 2.485 0 4.5-2.015 4.5-4.5 0-.725-.188-1.4-.493-2.007L18 9l-2-2 3.507-3.507C18.9 3.188 18.225 3 17.5 3 15.015 3 13 5.015 13 7.5c0 .725.188 1.4.493 2.007L3 20l2 2 6.848-6.848c1.885 1.928 3.874 3.753 5.977 5.45l1.425 1.148 1.5-1.5-1.15-1.425c-1.695-2.103-3.52-4.092-5.448-5.977z"/></g></svg>									<span>Customize</span>
+								</a>
+							</li>
+																<li class="actnbr-folded-follow">
+												<a class="actnbr-action actnbr-actn-follow " href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path clip-rule="evenodd" d="m4 4.5h12v6.5h1.5v-6.5-1.5h-1.5-12-1.5v1.5 10.5c0 1.1046.89543 2 2 2h7v-1.5h-7c-.27614 0-.5-.2239-.5-.5zm10.5 2h-9v1.5h9zm-5 3h-4v1.5h4zm3.5 1.5h-1v1h1zm-1-1.5h-1.5v1.5 1 1.5h1.5 1 1.5v-1.5-1-1.5h-1.5zm-2.5 2.5h-4v1.5h4zm6.5 1.25h1.5v2.25h2.25v1.5h-2.25v2.25h-1.5v-2.25h-2.25v-1.5h2.25z"  fill-rule="evenodd"></path></svg>
+			<span>Subscribe</span>
+		</a>
+		<a class="actnbr-action actnbr-actn-following  no-display" href="index.html">
+			<svg class="gridicon" height="20" width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path fill-rule="evenodd" clip-rule="evenodd" d="M16 4.5H4V15C4 15.2761 4.22386 15.5 4.5 15.5H11.5V17H4.5C3.39543 17 2.5 16.1046 2.5 15V4.5V3H4H16H17.5V4.5V12.5H16V4.5ZM5.5 6.5H14.5V8H5.5V6.5ZM5.5 9.5H9.5V11H5.5V9.5ZM12 11H13V12H12V11ZM10.5 9.5H12H13H14.5V11V12V13.5H13H12H10.5V12V11V9.5ZM5.5 12H9.5V13.5H5.5V12Z" fill="#008A20"></path><path class="following-icon-tick" d="M13.5 16L15.5 18L19 14.5" stroke="#008A20" stroke-width="1.5"></path></svg>
+			<span>Subscribed</span>
+		</a>
+										</li>
+																	<li class="actnbr-signup"><a href="https://wordpress.com/start/">Sign up</a></li>
+									<li class="actnbr-login"><a href="https://wordpress.com/log-in?redirect_to=https%3A%2F%2Fr-login.wordpress.com%2Fremote-login.php%3Faction%3Dlink%26back%3Dhttps%253A%252F%252Flahso.megginson.com%252F2010%252F08%252F17%252Fthe-flightlog-tag%252F">Log in</a></li>
+																	<li class="flb-report">
+										<a href="https://wordpress.com/abuse/?report_url=https://lahso.megginson.com" target="_blank" rel="noopener noreferrer">
+											Report this content										</a>
+									</li>
+																	<li class="actnbr-reader">
+										<a href="https://wordpress.com/read/feeds/1144385">
+											View site in Reader										</a>
+									</li>
+																	<li class="actnbr-subs">
+										<a href="https://subscribe.wordpress.com/">Manage subscriptions</a>
+									</li>
+																		<li class="actnbr-fold"><a href="index.html">Collapse this bar</a></li>
+															</ul>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+<script>
+window.addEventListener( "load", function( event ) {
+	var link = document.createElement( "link" );
+	link.href = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.css?v=20241015";
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	document.head.appendChild( link );
+
+	var script = document.createElement( "script" );
+	script.src = "https://s0.wp.com/wp-content/mu-plugins/actionbar/actionbar.js?v=20231122";
+	script.defer = true;
+	document.body.appendChild( script );
+} );
+</script>
+
+			<div id="jp-carousel-loading-overlay">
+			<div id="jp-carousel-loading-wrapper">
+				<span id="jp-carousel-library-loading">&nbsp;</span>
+			</div>
+		</div>
+		<div class="jp-carousel-overlay" style="display: none;">
+
+		<div class="jp-carousel-container">
+			<!-- The Carousel Swiper -->
+			<div
+				class="jp-carousel-wrap swiper-container jp-carousel-swiper-container jp-carousel-transitions"
+				itemscope
+				itemtype="https://schema.org/ImageGallery">
+				<div class="jp-carousel swiper-wrapper"></div>
+				<div class="jp-swiper-button-prev swiper-button-prev">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskPrev" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="9" height="12">
+							<path d="M16.2072 16.59L11.6496 12L16.2072 7.41L14.8041 6L8.8335 12L14.8041 18L16.2072 16.59Z" fill="white"/>
+						</mask>
+						<g mask="url(#maskPrev)">
+							<rect x="0.579102" width="23.8823" height="24" fill="#FFFFFF"/>
+						</g>
+					</svg>
+				</div>
+				<div class="jp-swiper-button-next swiper-button-next">
+					<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<mask id="maskNext" mask-type="alpha" maskUnits="userSpaceOnUse" x="8" y="6" width="8" height="12">
+							<path d="M8.59814 16.59L13.1557 12L8.59814 7.41L10.0012 6L15.9718 12L10.0012 18L8.59814 16.59Z" fill="white"/>
+						</mask>
+						<g mask="url(#maskNext)">
+							<rect x="0.34375" width="23.8822" height="24" fill="#FFFFFF"/>
+						</g>
+					</svg>
+				</div>
+			</div>
+			<!-- The main close buton -->
+			<div class="jp-carousel-close-hint">
+				<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<mask id="maskClose" mask-type="alpha" maskUnits="userSpaceOnUse" x="5" y="5" width="15" height="14">
+						<path d="M19.3166 6.41L17.9135 5L12.3509 10.59L6.78834 5L5.38525 6.41L10.9478 12L5.38525 17.59L6.78834 19L12.3509 13.41L17.9135 19L19.3166 17.59L13.754 12L19.3166 6.41Z" fill="white"/>
+					</mask>
+					<g mask="url(#maskClose)">
+						<rect x="0.409668" width="23.8823" height="24" fill="#FFFFFF"/>
+					</g>
+				</svg>
+			</div>
+			<!-- Image info, comments and meta -->
+			<div class="jp-carousel-info">
+				<div class="jp-carousel-info-footer">
+					<div class="jp-carousel-pagination-container">
+						<div class="jp-swiper-pagination swiper-pagination"></div>
+						<div class="jp-carousel-pagination"></div>
+					</div>
+					<div class="jp-carousel-photo-title-container">
+						<h2 class="jp-carousel-photo-caption"></h2>
+					</div>
+					<div class="jp-carousel-photo-icons-container">
+						<a href="index.html#" class="jp-carousel-icon-btn jp-carousel-icon-info" aria-label="Toggle photo metadata visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskInfo" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M12.7537 2C7.26076 2 2.80273 6.48 2.80273 12C2.80273 17.52 7.26076 22 12.7537 22C18.2466 22 22.7046 17.52 22.7046 12C22.7046 6.48 18.2466 2 12.7537 2ZM11.7586 7V9H13.7488V7H11.7586ZM11.7586 11V17H13.7488V11H11.7586ZM4.79292 12C4.79292 16.41 8.36531 20 12.7537 20C17.142 20 20.7144 16.41 20.7144 12C20.7144 7.59 17.142 4 12.7537 4C8.36531 4 4.79292 7.59 4.79292 12Z" fill="white"/>
+									</mask>
+									<g mask="url(#maskInfo)">
+										<rect x="0.8125" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+							</span>
+						</a>
+												<a href="index.html#" class="jp-carousel-icon-btn jp-carousel-icon-comments" aria-label="Toggle photo comments visibility">
+							<span class="jp-carousel-icon">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="maskComments" mask-type="alpha" maskUnits="userSpaceOnUse" x="2" y="2" width="21" height="20">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M4.3271 2H20.2486C21.3432 2 22.2388 2.9 22.2388 4V16C22.2388 17.1 21.3432 18 20.2486 18H6.31729L2.33691 22V4C2.33691 2.9 3.2325 2 4.3271 2ZM6.31729 16H20.2486V4H4.3271V18L6.31729 16Z" fill="white"/>
+									</mask>
+									<g mask="url(#maskComments)">
+										<rect x="0.34668" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+
+								<span class="jp-carousel-has-comments-indicator" aria-label="This image has comments."></span>
+							</span>
+						</a>
+											</div>
+				</div>
+				<div class="jp-carousel-info-extra">
+					<div class="jp-carousel-info-content-wrapper">
+						<div class="jp-carousel-photo-title-container">
+							<h2 class="jp-carousel-photo-title"></h2>
+						</div>
+						<div class="jp-carousel-comments-wrapper">
+															<div id="jp-carousel-comments-loading">
+									<span>Loading Comments...</span>
+								</div>
+								<div class="jp-carousel-comments"></div>
+								<div id="jp-carousel-comment-form-container">
+									<span id="jp-carousel-comment-form-spinner">&nbsp;</span>
+									<div id="jp-carousel-comment-post-results"></div>
+																														<form id="jp-carousel-comment-form">
+												<label for="jp-carousel-comment-form-comment-field" class="screen-reader-text">Write a Comment...</label>
+												<textarea
+													name="comment"
+													class="jp-carousel-comment-form-field jp-carousel-comment-form-textarea"
+													id="jp-carousel-comment-form-comment-field"
+													placeholder="Write a Comment..."
+												></textarea>
+												<div id="jp-carousel-comment-form-submit-and-info-wrapper">
+													<div id="jp-carousel-comment-form-commenting-as">
+																													<fieldset>
+																<label for="jp-carousel-comment-form-email-field">Email (Required)</label>
+																<input type="text" name="email" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-email-field" />
+															</fieldset>
+															<fieldset>
+																<label for="jp-carousel-comment-form-author-field">Name (Required)</label>
+																<input type="text" name="author" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-author-field" />
+															</fieldset>
+															<fieldset>
+																<label for="jp-carousel-comment-form-url-field">Website</label>
+																<input type="text" name="url" class="jp-carousel-comment-form-field jp-carousel-comment-form-text-field" id="jp-carousel-comment-form-url-field" />
+															</fieldset>
+																											</div>
+													<input
+														type="submit"
+														name="submit"
+														class="jp-carousel-comment-form-button"
+														id="jp-carousel-comment-form-button-submit"
+														value="Post Comment" />
+												</div>
+											</form>
+																											</div>
+													</div>
+						<div class="jp-carousel-image-meta">
+							<div class="jp-carousel-title-and-caption">
+								<div class="jp-carousel-photo-info">
+									<h3 class="jp-carousel-caption" itemprop="caption description"></h3>
+								</div>
+
+								<div class="jp-carousel-photo-description"></div>
+							</div>
+							<ul class="jp-carousel-image-exif" style="display: none;"></ul>
+							<a class="jp-carousel-image-download" href="index.html#" target="_blank" style="display: none;">
+								<svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="3" y="3" width="19" height="18">
+										<path fill-rule="evenodd" clip-rule="evenodd" d="M5.84615 5V19H19.7775V12H21.7677V19C21.7677 20.1 20.8721 21 19.7775 21H5.84615C4.74159 21 3.85596 20.1 3.85596 19V5C3.85596 3.9 4.74159 3 5.84615 3H12.8118V5H5.84615ZM14.802 5V3H21.7677V10H19.7775V6.41L9.99569 16.24L8.59261 14.83L18.3744 5H14.802Z" fill="white"/>
+									</mask>
+									<g mask="url(#mask0)">
+										<rect x="0.870605" width="23.8823" height="24" fill="#FFFFFF"/>
+									</g>
+								</svg>
+								<span class="jp-carousel-download-text"></span>
+							</a>
+							<div class="jp-carousel-image-map" style="display: none;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		</div>
+		<link crossorigin='anonymous' rel='stylesheet' id='all-css-0-2' href='https://s2.wp.com/_static/??-eJyljUsKhDAQRC80mXZGDLiQOUsmaSTa+ZBOI95eBN260E3BK4pXsGRlU6wYKwRRmWT0kWHCmo2dD4aQ0h5OCBmsKUkYCXjxGYv6S3SEb8v8gge2c3QWd4XVEzo1GiIs6xXtB78wfHT/7Zu203raAHg3ZXE=&cssminify=yes' type='text/css' media='all' />
+<script type="text/javascript" id="jetpack-carousel-js-extra">
+/* <![CDATA[ */
+var jetpackSwiperLibraryPath = {"url":"https:\/\/s2.wp.com\/wp-content\/mu-plugins\/jetpack-plugin\/moon\/_inc\/build\/carousel\/swiper-bundle.min.js"};
+var jetpackCarouselStrings = {"widths":[370,700,1000,1200,1400,2000],"is_logged_in":"","lang":"en","ajaxurl":"https:\/\/lahso.megginson.com\/wp-admin\/admin-ajax.php","nonce":"21125ed4ee","display_exif":"1","display_comments":"1","single_image_gallery":"1","single_image_gallery_media_file":"","background_color":"black","comment":"Comment","post_comment":"Post Comment","write_comment":"Write a Comment...","loading_comments":"Loading Comments...","image_label":"Open image in full-screen.","download_original":"View full size <span class=\"photo-size\">{0}<span class=\"photo-size-times\">\u00d7<\/span>{1}<\/span>","no_comment_text":"Please be sure to submit some text with your comment.","no_comment_email":"Please provide an email address to comment.","no_comment_author":"Please provide your name to comment.","comment_post_error":"Sorry, but there was an error posting your comment. Please try again later.","comment_approved":"Your comment was approved.","comment_unapproved":"Your comment is in moderation.","camera":"Camera","aperture":"Aperture","shutter_speed":"Shutter Speed","focal_length":"Focal Length","copyright":"Copyright","comment_registration":"0","require_name_email":"1","login_url":"https:\/\/lahso.wordpress.com\/wp-login.php?redirect_to=https%3A%2F%2Flahso.megginson.com%2F2010%2F08%2F14%2Fwhy-checkpoints-matter%2F","blog_id":"14987813","meta_data":["camera","aperture","shutter_speed","focal_length","copyright"],"stats_query_args":"blog=14987813&v=wpcom&tz=-5&user_id=0&subd=lahso","is_public":"1"};
+/* ]]> */
+</script>
+<script crossorigin='anonymous' type='text/javascript'  src='https://s0.wp.com/_static/??-eJylUMtqAzEM/KE6oqSPU+mnFK2tGG1ky1g2Jn8fF7Jt2UMK7UGHGWlGw8AozmtulBusBkkXFnLdqGKcnON80sNqD/DjbhGNrkiPnA2G1oDBnBc0I/s0Gdhkr0n9W8EhUjOgPrd6ZnKCAxqlIthox9/xWakV9OcbntE1wwdnD0tnCTCTc+ZGznxVkQ1fDonz3109Vp3tyNfdRvzPts3Wg4soQvVyD/3yZkvjRvGadnDq3tPb4+vx5fg053m9AtbPvys='></script>
+
+	<script type="text/javascript">
+		(function () {
+			var wpcom_reblog = {
+				source: 'toolbar',
+
+				toggle_reblog_box_flair: function (obj_id, post_id) {
+
+					// Go to site selector. This will redirect to their blog if they only have one.
+					const postEndpoint = `https://wordpress.com/post`;
+
+					// Ideally we would use the permalink here, but fortunately this will be replaced with the 
+					// post permalink in the editor.
+					const originalURL = `${ document.location.href }?page_id=${ post_id }`; 
+					
+					const url =
+						postEndpoint +
+						'?url=' +
+						encodeURIComponent( originalURL ) +
+						'&is_post_share=true' +
+						'&v=5';
+
+					const redirect = function () {
+						if (
+							! window.open( url, '_blank' )
+						) {
+							location.href = url;
+						}
+					};
+
+					if ( /Firefox/.test( navigator.userAgent ) ) {
+						setTimeout( redirect, 0 );
+					} else {
+						redirect();
+					}
+				},
+			};
+
+			window.wpcom_reblog = wpcom_reblog;
+		})();
+	</script>
+<script type="text/javascript">
+// <![CDATA[
+(function() {
+try{
+  if ( window.external &&'msIsSiteMode' in window.external) {
+    if (window.external.msIsSiteMode()) {
+      var jl = document.createElement('script');
+      jl.type='text/javascript';
+      jl.async=true;
+      jl.src='/wp-content/plugins/ie-sitemode/custom-jumplist.php';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(jl, s);
+    }
+  }
+}catch(e){}
+})();
+// ]]>
+</script>		<script type="text/javascript">
+			(function() {
+				var extend = function(out) {
+					out = out || {};
+
+					for (var i = 1; i < arguments.length; i++) {
+						if (!arguments[i])
+						continue;
+
+						for (var key in arguments[i]) {
+						if (arguments[i].hasOwnProperty(key))
+							out[key] = arguments[i][key];
+						}
+					}
+
+					return out;
+				};
+				extend( window.infiniteScroll.settings.scripts, ["jetpack-mu-wpcom-settings","rlt-proxy","cmp-script-stub","wpcom-actionbar-placeholder","grofiles-cards","wpgroho","mobile-useragent-info","wordads-smart","eu-cookie-law-script","the-neverending-homepage","jetpack-carousel","tiled-gallery","carousel-wpcom"] );
+				extend( window.infiniteScroll.settings.styles, ["wordads-global","wordads-twentyten","eu-cookie-law-style","the-neverending-homepage","wp-block-library","wp-block-library-theme","jetpack-layout-grid","jetpack-ratings","mediaelement","wp-mediaelement","coblocks-frontend","wpcom-core-compat-playlist-styles","wpcom-bbpress2-staff-css","twentyten-block-style","twentyten-wpcom-style","reblogging","geo-location-flair","infinity-twentyten","h4-global","wp-emoji-styles","videopress-video-style","jetpack-sharing-buttons-style","classic-theme-styles","global-styles","jetpack-global-styles-frontend-style","jetpack-carousel-swiper-css","jetpack-carousel","tiled-gallery","core-block-supports-duotone"] );
+			})();
+		</script>
+				<span id="infinite-aria" aria-live="polite"></span>
+		<script src="https://stats.wp.com/w.js?67" defer></script> <script type="text/javascript">
+_tkq = window._tkq || [];
+_stq = window._stq || [];
+_tkq.push(['storeContext', {'blog_id':'14987813','blog_tz':'-5','user_lang':'en','blog_lang':'en','user_id':'0'}]);
+_stq.push(['view', {'blog':'14987813','v':'wpcom','tz':'-5','user_id':'0','subd':'lahso'}]);
+_stq.push(['extra', {'crypt':'UE5XaGUuOTlwaD85flAmcm1mcmZsaDhkV11YdWtpP0NsWnVkPS9sL0ViLndld3BxTi9jQ0FmMWk0bjhwYkI9bVh4bTM3ZU5oUj1jenJXRno/Z0gyM1dLU35PYXx8NVtnVC5GSnBHXTU2ci1LV3AmemJwX2UrRUM1d1JKUW15Q2svaDZjJSxNSF0sWSVjZW4mZlozLSx8ME5iZFN4Tmp5MVRTVHk5cTZzfCsyUmpZVTlGQ0RPY0V6bUFrTDdBdVJ+fmUxSTVscy1VN1tiMHw1NXFwWzhIMTNoX0RrV09nYTRyLlssc2hfTE92Lkh8OF1rNm5SQS1aU0hWbFVaMzZLV0ZRS0pDeEROdHhwUDdsW0hBc09Y'}]);
+_stq.push([ 'clickTrackerInit', '14987813', '0' ]);
+</script>
+<noscript><img src="https://pixel.wp.com/b.gif?v=noscript" style="height:1px;width:1px;overflow:hidden;position:absolute;bottom:1px;" alt="" /></noscript>
+<script defer id="bilmur"  data-provider="wordpress.com" data-service="simple"   src="../../wp-content/js/bilmur-4.min.js%3Fi=12&amp;m=202502"></script><script>
+( function() {
+	function getMobileUserAgentInfo() {
+		if ( typeof wpcom_mobile_user_agent_info === 'object' ) {
+			wpcom_mobile_user_agent_info.init();
+			var mobileStatsQueryString = '';
+
+			if ( wpcom_mobile_user_agent_info.matchedPlatformName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_platforms' + '=' + wpcom_mobile_user_agent_info.matchedPlatformName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.matchedUserAgentName !== false ) {
+				mobileStatsQueryString += '&x_' + 'mobile_devices' + '=' + wpcom_mobile_user_agent_info.matchedUserAgentName;
+			}
+
+			if ( wpcom_mobile_user_agent_info.isIPad() ) {
+				mobileStatsQueryString += '&x_' + 'ipad_views' + '=' + 'views';
+			}
+
+			if ( mobileStatsQueryString != '' ) {
+				new Image().src = document.location.protocol + '//pixel.wp.com/g.gif?v=wpcom-no-pv' + mobileStatsQueryString + '&baba=' + Math.random();
+			}
+		}
+	}
+
+	document.addEventListener( 'DOMContentLoaded', getMobileUserAgentInfo );
+} )();
+</script></body>
+</html>

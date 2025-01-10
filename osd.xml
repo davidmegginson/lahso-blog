@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+	<ShortName>lahso</ShortName>
+	<Description>Search Land and Hold Short - Flying a small plane.</Description>
+	<Contact>help@wordpress.com</Contact>
+	<Url type="application/atom+xml" template="https://lahso.megginson.com/?s={searchTerms}&amp;feed=atom" />
+	<Url type="rss+xml" template="https://lahso.megginson.com/?s={searchTerms}&amp;feed=rss2" />
+	<Url type="text/html" template="https://lahso.megginson.com/?s={searchTerms}" method="GET" />
+	<Url type="application/opensearchdescription+xml" rel="self" template="https://lahso.megginson.com/osd.xml" />
+	<LongName>Land and Hold Short</LongName>
+	<Image height="16" width="16" type="image/vnd.microsoft.icon">https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=16&#038;d=https%3A%2F%2Flahso.megginson.com%2Ffavicon.ico</Image>
+	<Image height="64" width="64" type="image/png">https://secure.gravatar.com/blavatar/0f2d075ecca32fc02424584b81c0c272ada271e6d93176ea3860098157b436dc?s=64&#038;d=https%3A%2F%2Fs-ssl.wordpress.com%2Fi%2Flogo%2Fgray-white-transparent-64.png</Image>
+	<Query role="example" searchTerms="photography" />
+	<Tags>news aviating places web owning tips ourairports canada-us system numbers</Tags>
+	<Developer>Automattic</Developer>
+	<SyndicationRight>open</SyndicationRight>
+	<AdultContent>false</AdultContent>
+	<Language>en</Language>
+	<OutputEncoding>UTF-8</OutputEncoding>
+	<InputEncoding>UTF-8</InputEncoding>
+	<moz:SearchForm>https://lahso.megginson.com</moz:SearchForm>
+</OpenSearchDescription>
